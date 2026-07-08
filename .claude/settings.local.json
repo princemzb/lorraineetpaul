@@ -3,7 +3,32 @@
     "allow": [
       "Bash(docker --version)",
       "Bash(docker compose *)",
-      "Bash(docker-compose --version)"
+      "Bash(docker-compose --version)",
+      "Bash(npx tsc *)",
+      "Bash(node *)",
+      "Bash(npx playwright *)",
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(mkdir -p /Users/prince/Developer/mariage/src/app/api/admin/menus/soiree/options/\\\\[id\\\\])",
+      "Bash(mkdir -p /Users/prince/Developer/mariage/src/app/api/admin/menus/soiree/menus/\\\\[id\\\\])",
+      "Bash(curl -s http://localhost:3000/api/menus/soiree)",
+      "Bash(python3 -m json.tool)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(npm run *)",
+      "Bash(disown)",
+      "Read(//private/tmp/**)",
+      "Bash(curl -s http://localhost:3000/api/ceremonies)",
+      "Bash(mkdir -p /Users/prince/Developer/mariage/src/app/api/hero-photos/\\\\[id\\\\]/image)",
+      "Bash(mkdir -p /Users/prince/Developer/mariage/src/app/api/admin/hero-photos/\\\\[id\\\\])",
+      "Bash(curl -s http://localhost:3000/api/hero-photos)",
+      "Bash(curl -s -o /dev/null -w \"home: %{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(mkdir -p /Users/prince/Developer/mariage/src/app/api/theme-photos/\\\\[id\\\\]/image)",
+      "Bash(mkdir -p /Users/prince/Developer/mariage/src/app/api/admin/theme-photos/\\\\[id\\\\])",
+      "Bash(curl -s -o /dev/null -w \"theme page: %{http_code}\\\\n\" http://localhost:3000/theme)",
+      "Bash(curl -s http://localhost:3000/api/theme-photos)",
+      "Bash(curl -s -o /dev/null -w \"contact page: %{http_code}\\\\n\" http://localhost:3000/contact)",
+      "Bash(curl -s -o /dev/null -w \"contact: %{http_code}\\\\n\" http://localhost:3000/contact)",
+      "Bash(./node_modules/.bin/tsc --noEmit)"
     ]
   }
 }

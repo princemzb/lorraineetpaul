@@ -1,0 +1,1 @@
+ALTER TABLE "Invitation" ADD COLUMN "accompanistCount" INTEGER NOT NULL DEFAULT 0;

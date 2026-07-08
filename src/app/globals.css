@@ -1,26 +1,124 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #fdf9f4;
+  --foreground: #3a3a3a;
+  --gold: #c9a96e;
+  --gold-dark: #8b7355;
+  --cream: #fdf3e3;
+  --cream-dark: #f0e6d3;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.font-sans {
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* ============================================================
+   Charte "chic" — pages publiques (accueil, invitation, RSVP)
+   Noir absolu / Vert pomme / Or — ne touche pas aux variables
+   ci-dessus, utilisées par l'espace admin.
+   ============================================================ */
+:root {
+  --noir: #030303;
+  --noir-soft: #0a0a0a;
+  --noir-surface: #101010;
+  --noir-border: rgba(212, 175, 55, 0.16);
+  --or: #d4af37;
+  --or-light: #f1d57b;
+  --or-deep: #8a6a1f;
+  --pomme: #7cb342;
+  --pomme-light: #b7e08a;
+  --pomme-deep: #33510f;
+  --ivoire: #f6f2e9;
+  --ivoire-dim: rgba(246, 242, 233, 0.62);
+}
+
+.font-display {
+  font-family: var(--font-display), Georgia, serif;
+}
+
+.font-accent {
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmerGold {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes floatSlow {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(2%, -4%) scale(1.05);
+  }
+}
+
+@keyframes floatSlowReverse {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-3%, 3%) scale(1.08);
+  }
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.text-gold-shine {
+  background: linear-gradient(100deg, var(--or-deep) 10%, var(--or-light) 35%, var(--or) 50%, var(--or-deep) 70%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmerGold 7s linear infinite;
+}
+
+.glow-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  pointer-events: none;
+}
+
+.glow-orb-pomme {
+  background: radial-gradient(circle, var(--pomme) 0%, transparent 70%);
+  animation: floatSlow 14s ease-in-out infinite;
+}
+
+.glow-orb-or {
+  background: radial-gradient(circle, var(--or) 0%, transparent 70%);
+  animation: floatSlowReverse 18s ease-in-out infinite;
 }

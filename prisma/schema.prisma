@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Ceremony {
+  CIVIL
+  RELIGIEUX
+  VIN_HONNEUR
+  SOIREE
+}
+
+enum RSVPStatus {
+  PENDING
+  CONFIRMED
+  DECLINED
+}
+
+enum CourseType {
+  ENTREE
+  PLAT
+  DESSERT
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  hashedPassword String
+  name           String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// Configuration éditable (depuis l'admin) des 4 cérémonies fixes.
+// Une ligne par valeur de l'enum Ceremony.
+model CeremonyConfig {
+  id          String    @id @default(cuid())
+  ceremony    Ceremony  @unique
+  name        String
+  emoji       String    @default("💍")
+  description String?
+  address     String?
+  date        DateTime?
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// Photos affichées en carrousel sur l'arrière-plan de la page d'accueil
+// (max 7, géré depuis l'admin). Stockées en base pour rester persistantes
+// quel que soit le déploiement (pas de dépendance à un volume de fichiers).
+model HeroPhoto {
+  id        String   @id @default(cuid())
+  data      Bytes
+  mimeType  String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+// Photos illustrant le thème/dress code du mariage, affichées avec leur
+// texte descriptif sur la page publique /theme (carrousel manuel).
+model ThemePhoto {
+  id          String   @id @default(cuid())
+  data        Bytes
+  mimeType    String
+  description String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model Guest {
+  id          String       @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String?
+  phone       String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  invitations Invitation[]
+}
+
+model MenuItem {
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  ceremony    Ceremony
+  order       Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  invitations Invitation[]
+}
+
+// Menu composable (ex: "Menu Paul" / "Menu Lorraine" pour la Soirée) :
+// chaque menu regroupe des options par service (entrée/plat/dessert)
+// parmi lesquelles l'invité compose son repas.
+model Menu {
+  id          String       @id @default(cuid())
+  name        String
+  ceremony    Ceremony
+  order       Int          @default(0)
+  options     MenuOption[]
+  invitations Invitation[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model MenuOption {
+  id          String     @id @default(cuid())
+  menuId      String
+  menu        Menu       @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  course      CourseType
+  name        String
+  description String?
+  order       Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  entreeInvitations  Invitation[] @relation("EntreeChoice")
+  platInvitations    Invitation[] @relation("PlatChoice")
+  dessertInvitations Invitation[] @relation("DessertChoice")
+}
+
+model Invitation {
+  id                String     @id @default(cuid())
+  token             String     @unique @default(cuid())
+  ceremony          Ceremony
+  guestId           String
+  guest             Guest      @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  status            RSVPStatus @default(PENDING)
+  menuItemId        String?
+  menuItem          MenuItem?  @relation(fields: [menuItemId], references: [id])
+  menuId            String?
+  menu              Menu?       @relation(fields: [menuId], references: [id])
+  entreeOptionId    String?
+  entreeOption      MenuOption? @relation("EntreeChoice", fields: [entreeOptionId], references: [id])
+  platOptionId      String?
+  platOption        MenuOption? @relation("PlatChoice", fields: [platOptionId], references: [id])
+  dessertOptionId   String?
+  dessertOption     MenuOption? @relation("DessertChoice", fields: [dessertOptionId], references: [id])
+  accompanistCount  Int        @default(0)
+  notes             String?
+  respondedAt       DateTime?
+  emailSent         Boolean    @default(false)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+}
+
+// Messages laissés par les visiteurs via la page /contact (prospects
+// intéressés par un site similaire pour leurs propres invités).
+model ContactMessage {
+  id         String    @id @default(cuid())
+  firstName  String
+  lastName   String
+  email      String
+  phone      String?
+  eventType  String
+  guestCount String?
+  eventDate  DateTime?
+  message    String
+  consent    Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+}
