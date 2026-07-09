@@ -18,7 +18,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   const ceremonies = await getCeremonyConfigs()
   const dateRangeLabel = formatDateRange(
-    ceremonies.map((c) => c.date).filter((d): d is string => !!d).map((d) => new Date(d))
+    ceremonies.map((c) => c.date).filter((d): d is Date => !!d)
   )
 
   return (
