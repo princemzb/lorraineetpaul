@@ -32,7 +32,7 @@ services:
       - "3000:3000"
     environment:
       DATABASE_URL: postgresql://mariage:mariage_secret@db:5432/mariage?sslmode=disable&connect_timeout=10
-      AUTH_SECRET: super_secret_jwt_key_change_in_production
+      AUTH_SECRET: mPm+evlODZgtssVXPc5GcFyMeL7A+s8WV6PXPtaAKJM=
       NEXTAUTH_URL: http://localhost:3000
       SMTP_HOST: mailhog
       SMTP_PORT: 1025

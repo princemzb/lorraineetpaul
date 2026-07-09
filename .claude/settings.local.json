@@ -28,7 +28,22 @@
       "Bash(curl -s http://localhost:3000/api/theme-photos)",
       "Bash(curl -s -o /dev/null -w \"contact page: %{http_code}\\\\n\" http://localhost:3000/contact)",
       "Bash(curl -s -o /dev/null -w \"contact: %{http_code}\\\\n\" http://localhost:3000/contact)",
-      "Bash(./node_modules/.bin/tsc --noEmit)"
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(docker run *)",
+      "Bash(docker build *)",
+      "Bash(docker exec *)",
+      "Bash(docker system *)",
+      "Bash(timeout 15 docker ps -a --filter \"name=mariage\" --format \"{{.Names}} {{.Status}}\")",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(docker info *)",
+      "Bash(osascript -e 'quit app \"Docker\"')",
+      "Bash(open -a Docker)",
+      "Read(//Users/prince/Library/Containers/com.docker.docker/Data/log/host/**)",
+      "Read(//Users/prince/Library/Containers/com.docker.docker/Data/log/vm/**)",
+      "Bash(openssl rand *)",
+      "Bash(git check-ignore *)",
+      "Bash(echo \"exit:$?\")",
+      "Bash(git add *)"
     ]
   }
 }

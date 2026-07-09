@@ -311,7 +311,7 @@ export default function HomePage() {
         className="relative py-8 text-center text-sm border-t"
         style={{ borderColor: 'var(--noir-border)', color: 'var(--ivoire-dim)' }}
       >
-        <p>Loraine &amp; Paul — 15 Novembre 2025</p>
+        <p>Loraine &amp; Paul — {dateRangeLabel}</p>
         <p className="mt-3 text-xs opacity-60">
           Conçu par{' '}
           <Link href="/contact" className="hover:opacity-100 transition-opacity" style={{ color: 'var(--or-light)' }}>

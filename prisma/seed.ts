@@ -6,18 +6,22 @@ import path from 'path'
 const prisma = new PrismaClient()
 
 async function main() {
-  // Create admin user
-  const existing = await prisma.user.findUnique({ where: { email: 'admin@mariage.fr' } })
+  // Create admin user. En production, définir ADMIN_EMAIL et ADMIN_PASSWORD
+  // pour éviter les identifiants par défaut (uniquement destinés au dev local).
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@mariage.fr'
+  const adminPassword = process.env.ADMIN_PASSWORD || 'password123'
+
+  const existing = await prisma.user.findUnique({ where: { email: adminEmail } })
   if (!existing) {
-    const hashedPassword = await bcrypt.hash('password123', 12)
+    const hashedPassword = await bcrypt.hash(adminPassword, 12)
     await prisma.user.create({
       data: {
-        email: 'admin@mariage.fr',
+        email: adminEmail,
         hashedPassword,
         name: 'Administrateur',
       },
     })
-    console.log('Admin user created: admin@mariage.fr / password123')
+    console.log(`Admin user created: ${adminEmail} / ${process.env.ADMIN_PASSWORD ? '(mot de passe défini via ADMIN_PASSWORD)' : adminPassword}`)
   }
 
   // Create menu items for civil
