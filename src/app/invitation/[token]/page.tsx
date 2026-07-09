@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import LuxeBackground from '@/components/public/LuxeBackground'
 import Card from '@/components/public/Card'
 import { GoldButton } from '@/components/public/Buttons'
+import GuestQRCode from '@/components/public/GuestQRCode'
 import { formatCeremonyDate } from '@/lib/format'
 
 type MenuItem = {
@@ -21,6 +22,7 @@ type ComposableMenu = { id: string; name: string; options: MenuOption[] }
 const COURSE_LABELS: Record<CourseType, string> = { ENTREE: 'Entrée', PLAT: 'Plat', DESSERT: 'Dessert' }
 
 type Guest = {
+  id: string
   firstName: string
   lastName: string
   email?: string
@@ -286,9 +288,16 @@ export default function InvitationPage() {
                     : 'Votre réponse a bien été enregistrée. Nous espérons vous voir bientôt.'}
                 </p>
                 {invitation.guest.email && (
-                  <p className="text-sm" style={{ color: 'var(--ivoire-dim)', opacity: 0.7 }}>
+                  <p className="text-sm mb-6" style={{ color: 'var(--ivoire-dim)', opacity: 0.7 }}>
                     Un email de confirmation a été envoyé à {invitation.guest.email}
                   </p>
+                )}
+                {selectedStatus === 'CONFIRMED' && (
+                  <div className="pt-2 border-t mb-2" style={{ borderColor: 'var(--noir-border)' }}>
+                    <div className="pt-6">
+                      <GuestQRCode guestId={invitation.guest.id} guestName={guestName} />
+                    </div>
+                  </div>
                 )}
                 <button
                   onClick={() => setSubmitted(false)}

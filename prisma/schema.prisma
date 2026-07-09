@@ -78,6 +78,10 @@ model Guest {
   lastName    String
   email       String?
   phone       String?
+  checkedInAt DateTime?
+  // Renseignés par l'admin après l'inscription, visibles au scan du QR le jour J.
+  table       String?
+  adminNote   String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   invitations Invitation[]

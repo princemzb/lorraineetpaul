@@ -8,11 +8,18 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
   const { id } = await params
   const body = await req.json()
-  const { firstName, lastName, email, phone } = body
+  const { firstName, lastName, email, phone, table, adminNote } = body
 
   const guest = await prisma.guest.update({
     where: { id },
-    data: { firstName, lastName, email: email || null, phone: phone || null },
+    data: {
+      firstName,
+      lastName,
+      email: email || null,
+      phone: phone || null,
+      table: table || null,
+      adminNote: adminNote || null,
+    },
   })
   return NextResponse.json(guest)
 }

@@ -47,6 +47,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <NavLink href="/admin/ceremonies" label="Cérémonies" icon="💒" />
           <NavLink href="/admin/hero-photos" label="Photos d'accueil" icon="📷" />
           <NavLink href="/admin/theme-photos" label="Thème & consignes" icon="🎨" />
+          <NavLink href="/admin/checkin" label="Check-in invités" icon="✅" />
         </nav>
 
         <div className="p-4 border-t border-white/10">

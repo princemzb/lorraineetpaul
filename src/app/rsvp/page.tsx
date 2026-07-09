@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import LuxeBackground from '@/components/public/LuxeBackground'
 import Card from '@/components/public/Card'
 import { GoldButton, GoldLink, OutlineButton } from '@/components/public/Buttons'
+import GuestQRCode from '@/components/public/GuestQRCode'
 import { formatCeremonyDate } from '@/lib/format'
 
 type MenuItem = { id: string; name: string; description?: string }
@@ -457,6 +458,7 @@ export default function RSVPPage() {
   const [soireeMenus, setSoireeMenus] = useState<ComposableMenu[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [guestId, setGuestId] = useState('')
   const [error, setError] = useState('')
 
   const [form, setForm] = useState<FormData>({
@@ -620,6 +622,7 @@ export default function RSVPPage() {
 
     const data = await res.json()
     if (res.ok) {
+      setGuestId(data.guestId || '')
       setSubmitted(true)
     } else {
       setError(data.error || 'Une erreur est survenue.')
@@ -700,6 +703,13 @@ export default function RSVPPage() {
               </div>
             )}
           </Card>
+
+          {guestId && (
+            <Card className="p-6 mb-8">
+              <GuestQRCode guestId={guestId} guestName={`${form.firstName} ${form.lastName}`} />
+            </Card>
+          )}
+
           <GoldLink href="/">Retour à l&apos;accueil</GoldLink>
         </motion.div>
       </main>

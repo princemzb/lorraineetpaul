@@ -8,6 +8,8 @@ type Guest = {
   lastName: string
   email?: string
   phone?: string
+  table?: string
+  adminNote?: string
   invitations: Array<{
     id: string
     ceremony: 'CIVIL' | 'SOIREE'
@@ -23,7 +25,7 @@ export default function GuestsPage() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editGuest, setEditGuest] = useState<Guest | null>(null)
-  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '' })
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '', table: '', adminNote: '' })
   const [submitting, setSubmitting] = useState(false)
 
   const load = useCallback(async () => {
@@ -37,13 +39,20 @@ export default function GuestsPage() {
 
   const openAdd = () => {
     setEditGuest(null)
-    setForm({ firstName: '', lastName: '', email: '', phone: '' })
+    setForm({ firstName: '', lastName: '', email: '', phone: '', table: '', adminNote: '' })
     setShowForm(true)
   }
 
   const openEdit = (g: Guest) => {
     setEditGuest(g)
-    setForm({ firstName: g.firstName, lastName: g.lastName, email: g.email || '', phone: g.phone || '' })
+    setForm({
+      firstName: g.firstName,
+      lastName: g.lastName,
+      email: g.email || '',
+      phone: g.phone || '',
+      table: g.table || '',
+      adminNote: g.adminNote || '',
+    })
     setShowForm(true)
   }
 
@@ -90,7 +99,12 @@ export default function GuestsPage() {
             <input value={form.lastName} onChange={e => setForm(f => ({ ...f, lastName: e.target.value }))} placeholder="Nom *" className="border rounded-lg px-3 py-2 text-sm focus:outline-none" style={{ borderColor: '#e8d5b7' }} />
             <input value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="Email" type="email" className="border rounded-lg px-3 py-2 text-sm focus:outline-none" style={{ borderColor: '#e8d5b7' }} />
             <input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="Téléphone" className="border rounded-lg px-3 py-2 text-sm focus:outline-none" style={{ borderColor: '#e8d5b7' }} />
+            <input value={form.table} onChange={e => setForm(f => ({ ...f, table: e.target.value }))} placeholder="Table (ex: Table 5, Table des mariés...)" className="border rounded-lg px-3 py-2 text-sm focus:outline-none" style={{ borderColor: '#e8d5b7' }} />
+            <input value={form.adminNote} onChange={e => setForm(f => ({ ...f, adminNote: e.target.value }))} placeholder="Note interne (visible au check-in)" className="border rounded-lg px-3 py-2 text-sm focus:outline-none col-span-2" style={{ borderColor: '#e8d5b7' }} />
           </div>
+          <p className="text-xs text-gray-400 mt-2">
+            La table et la note interne apparaîtront lors du scan du QR code de l&apos;invité le jour J.
+          </p>
           <div className="flex gap-3 mt-4">
             <button onClick={handleSubmit} disabled={submitting} className="px-4 py-2 rounded-lg text-white text-sm" style={{ background: '#8b7355' }}>
               {submitting ? 'Enregistrement...' : 'Enregistrer'}
@@ -115,6 +129,7 @@ export default function GuestsPage() {
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Nom</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Contact</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Cérémonies</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600">Table</th>
                 <th className="text-right px-4 py-3 font-medium text-gray-600">Actions</th>
               </tr>
             </thead>
@@ -139,6 +154,9 @@ export default function GuestsPage() {
                         ))
                       )}
                     </div>
+                  </td>
+                  <td className="px-4 py-3 text-gray-600">
+                    {g.table || <span className="text-gray-300">—</span>}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-2">
