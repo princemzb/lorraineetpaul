@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import LuxeBackground from '@/components/public/LuxeBackground'
 import Card from '@/components/public/Card'
 import { GoldButton, GoldLink, OutlineButton } from '@/components/public/Buttons'
 import GuestQRCode from '@/components/public/GuestQRCode'
-import { formatCeremonyDate } from '@/lib/format'
+import { formatCeremonyDate, formatDateRange } from '@/lib/format'
 
 type MenuItem = { id: string; name: string; description?: string }
 
@@ -501,6 +501,11 @@ export default function RSVPPage() {
   const configFor = (ceremony: CeremonyKey): CeremonyConfig =>
     ceremonyConfigs.find((c) => c.ceremony === ceremony) || FALLBACK_CONFIG(ceremony)
 
+  const dateRangeLabel = useMemo(
+    () => formatDateRange(ceremonyConfigs.map((c) => c.date).filter((d): d is string => !!d).map((d) => new Date(d))),
+    [ceremonyConfigs]
+  )
+
   const updateCivil = (d: Partial<CeremonyForm>) =>
     setForm((f) => ({ ...f, civil: { ...f.civil, ...d } }))
   const updateReligieux = (d: Partial<CeremonyForm>) =>
@@ -711,6 +716,16 @@ export default function RSVPPage() {
           )}
 
           <GoldLink href="/">Retour à l&apos;accueil</GoldLink>
+
+          <footer className="mt-12 text-sm" style={{ color: IVOIRE_DIM, opacity: 0.6 }}>
+            <p>Loraine &amp; Paul — {dateRangeLabel}</p>
+            <p className="mt-2 text-xs opacity-70">
+              Conçu par{' '}
+              <Link href="/contact" className="hover:opacity-100 transition-opacity" style={{ color: OR }}>
+                Premices &amp; Associés Consulting (PAC)
+              </Link>
+            </p>
+          </footer>
         </motion.div>
       </main>
     )
@@ -984,6 +999,16 @@ export default function RSVPPage() {
             )}
           </div>
         </Card>
+
+        <footer className="mt-8 text-center text-sm" style={{ color: IVOIRE_DIM, opacity: 0.6 }}>
+          <p>Loraine &amp; Paul — {dateRangeLabel}</p>
+          <p className="mt-2 text-xs opacity-70">
+            Conçu par{' '}
+            <Link href="/contact" className="hover:opacity-100 transition-opacity" style={{ color: OR }}>
+              Premices &amp; Associés Consulting (PAC)
+            </Link>
+          </p>
+        </footer>
       </div>
     </main>
   )

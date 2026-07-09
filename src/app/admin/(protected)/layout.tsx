@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { signOut } from '@/auth'
 import { getCeremonyConfigs } from '@/lib/ceremonies'
+import { formatDateRange } from '@/lib/format'
 
 const CEREMONY_HREFS: Record<string, string> = {
   CIVIL: '/admin/invitations/civil',
@@ -16,6 +17,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!session) redirect('/admin/login')
 
   const ceremonies = await getCeremonyConfigs()
+  const dateRangeLabel = formatDateRange(
+    ceremonies.map((c) => c.date).filter((d): d is string => !!d).map((d) => new Date(d))
+  )
 
   return (
     <div className="min-h-screen flex" style={{ background: '#f8f5f0' }}>
@@ -60,6 +64,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <span>🚪</span> Se déconnecter
             </button>
           </form>
+        </div>
+
+        <div className="px-4 pb-4 text-center">
+          <p className="text-white/50 text-xs">Loraine &amp; Paul — {dateRangeLabel}</p>
+          <p className="text-white/30 text-[11px] mt-1">
+            Conçu par{' '}
+            <Link href="/contact" className="hover:text-white/60 transition-colors">
+              Premices &amp; Associés Consulting (PAC)
+            </Link>
+          </p>
         </div>
       </aside>
 

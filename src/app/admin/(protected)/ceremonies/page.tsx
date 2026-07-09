@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import EmojiPicker from '@/components/admin/EmojiPicker'
 
 type Ceremony = 'CIVIL' | 'RELIGIEUX' | 'VIN_HONNEUR' | 'SOIREE'
 
@@ -71,12 +72,7 @@ function CeremonyForm({ config, onSaved }: { config: CeremonyConfig; onSaved: (c
         <div className="grid grid-cols-[1fr_5fr] gap-4">
           <div>
             <label className="block text-sm font-medium mb-1" style={{ color: '#8b7355' }}>Emoji</label>
-            <input
-              value={emoji}
-              onChange={(e) => setEmoji(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2 text-lg text-center focus:outline-none"
-              style={{ borderColor: '#e8d5b7' }}
-            />
+            <EmojiPicker value={emoji} onChange={setEmoji} />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1" style={{ color: '#8b7355' }}>Nom *</label>
