@@ -235,7 +235,7 @@ export default function HomePage() {
                     className="h-1.5"
                     style={{ background: 'linear-gradient(90deg, var(--pomme), var(--or))' }}
                   />
-                  <div className="p-10 md:p-12">
+                  <div className="p-10 md:p-12 text-center">
                     <div
                       className="w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-6 mx-auto"
                       style={{ background: 'linear-gradient(135deg, var(--pomme-deep), var(--pomme))' }}
@@ -252,7 +252,7 @@ export default function HomePage() {
                     )}
                     <div className="space-y-4 text-base" style={{ color: 'var(--ivoire-dim)' }}>
                       {c.date && (
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center gap-3">
                           <svg
                             className="w-5 h-5 flex-shrink-0"
                             style={{ color: 'var(--pomme-light)' }}
@@ -271,7 +271,7 @@ export default function HomePage() {
                         </div>
                       )}
                       {c.address && (
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center gap-3">
                           <svg
                             className="w-5 h-5 flex-shrink-0"
                             style={{ color: 'var(--pomme-light)' }}
