@@ -65,21 +65,21 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             </button>
           </form>
         </div>
-
-        <div className="px-4 pb-4 text-center">
-          <p className="text-white/50 text-xs">Loraine &amp; Paul — {dateRangeLabel}</p>
-          <p className="text-white/30 text-[11px] mt-1">
-            Conçu par{' '}
-            <Link href="/contact" className="hover:text-white/60 transition-colors">
-              Premices &amp; Associés Consulting (PAC)
-            </Link>
-          </p>
-        </div>
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-auto">
-        {children}
+      <main className="flex-1 overflow-auto flex flex-col">
+        <div className="flex-1">{children}</div>
+
+        <footer className="px-8 py-4 text-center border-t" style={{ borderColor: '#f0e6d3' }}>
+          <p className="text-xs" style={{ color: '#a8987d' }}>Loraine &amp; Paul — {dateRangeLabel}</p>
+          <p className="text-[11px] mt-1" style={{ color: '#c4b8a3' }}>
+            Conçu par{' '}
+            <Link href="/contact" className="hover:opacity-70 transition-opacity" style={{ color: '#8b7355' }}>
+              Premices &amp; Associés Consulting (PAC)
+            </Link>
+          </p>
+        </footer>
       </main>
     </div>
   )
