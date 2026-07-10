@@ -3,7 +3,7 @@ import InvitationClient from './InvitationClient'
 
 export function generateMetadata(): Metadata {
   const appUrl = process.env.APP_URL || 'http://localhost:3000'
-  const imageUrl = `${appUrl}/invitation-envelope.png`
+  const imageUrl = `${appUrl}/invitation-envelope.jpg`
 
   return {
     title: 'Vous êtes invité(e) — Lorraine & Paul',

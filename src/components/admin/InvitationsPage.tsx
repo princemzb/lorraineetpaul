@@ -102,21 +102,6 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
     setSendingId(null)
   }
 
-  const normalizePhoneForWhatsApp = (phone: string) => {
-    let digits = phone.replace(/\D/g, '')
-    if (digits.startsWith('0') && digits.length === 10) {
-      digits = '33' + digits.slice(1)
-    }
-    return digits
-  }
-
-  const sendWhatsApp = (inv: Invitation) => {
-    const url = `${window.location.origin}/invitation/${inv.token}`
-    const message = `Bonjour ${inv.guest.firstName}, vous êtes invité(e) à notre ${ceremonyEmoji} ${ceremonyLabel} ! Découvrez votre invitation et confirmez votre présence : ${url}`
-    const phone = normalizePhoneForWhatsApp(inv.guest.phone || '')
-    const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
-    window.open(waUrl, '_blank')
-  }
 
   const deleteInvitation = async (id: string) => {
     if (!confirm('Supprimer cette invitation ?')) return
@@ -322,16 +307,6 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
                             title={inv.emailSent ? 'Email déjà envoyé' : 'Envoyer le lien par email'}
                           >
                             {sendingId === inv.id ? '...' : inv.emailSent ? '✓ Email' : '📧 Email'}
-                          </button>
-                        )}
-                        {inv.guest.phone && (
-                          <button
-                            onClick={() => sendWhatsApp(inv)}
-                            className="px-2 py-1 rounded text-xs border transition-all"
-                            style={{ borderColor: '#e8d5b7', color: '#25D366' }}
-                            title="Envoyer l'invitation par WhatsApp"
-                          >
-                            💬 WhatsApp
                           </button>
                         )}
                         <button
