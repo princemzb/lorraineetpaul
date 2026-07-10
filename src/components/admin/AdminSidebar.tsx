@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { adminSignOut } from '@/app/admin/actions'
+import InviteButton from '@/components/admin/InviteButton'
 
 type CeremonyConfig = { ceremony: string; name: string; emoji: string }
 
@@ -66,6 +67,10 @@ export default function AdminSidebar({ ceremonies, email }: { ceremonies: Ceremo
           >
             ✕
           </button>
+        </div>
+
+        <div className="px-4 pt-4">
+          <InviteButton fullWidth />
         </div>
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto" onClick={() => setOpen(false)}>
