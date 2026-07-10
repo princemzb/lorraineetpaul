@@ -29,7 +29,7 @@ export default function HeroCarousel({
         <motion.img
           key={slides[index]}
           src={slides[index]}
-          alt="Loraine et Paul"
+          alt="Lorraine et Paul"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

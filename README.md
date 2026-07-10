@@ -1,6 +1,6 @@
-# Mariage Loraine & Paul
+# Mariage Lorraine & Paul
 
-Site de gestion des invitations pour le mariage de Loraine et Paul : pages publiques (accueil, RSVP, invitation individuelle, thème, contact) et espace d'administration.
+Site de gestion des invitations pour le mariage de Lorraine et Paul : pages publiques (accueil, RSVP, invitation individuelle, thème, contact) et espace d'administration.
 
 ## Stack
 

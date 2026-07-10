@@ -39,7 +39,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-4xl text-white mb-2" style={{ fontFamily: 'Georgia, serif' }}>
-            Loraine & Paul
+            Lorraine & Paul
           </h1>
           <p className="text-white/70">Espace Administration</p>
         </div>

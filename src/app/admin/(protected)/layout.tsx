@@ -23,7 +23,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="flex-1">{children}</div>
 
         <footer className="px-8 py-4 text-center border-t" style={{ borderColor: '#f0e6d3' }}>
-          <p className="text-xs" style={{ color: '#a8987d' }}>Loraine &amp; Paul — {dateRangeLabel}</p>
+          <p className="text-xs" style={{ color: '#a8987d' }}>Lorraine &amp; Paul — {dateRangeLabel}</p>
           <p className="text-[11px] mt-1" style={{ color: '#c4b8a3' }}>
             Conçu par{' '}
             <Link href="/contact" className="hover:opacity-70 transition-opacity" style={{ color: '#8b7355' }}>

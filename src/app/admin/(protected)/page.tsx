@@ -132,7 +132,7 @@ export default async function AdminDashboard() {
         <h1 className="text-3xl font-medium" style={{ color: '#8b7355', fontFamily: 'Georgia, serif' }}>
           Tableau de bord
         </h1>
-        <p className="text-gray-500 mt-1">Mariage Loraine &amp; Paul — {dateRangeLabel}</p>
+        <p className="text-gray-500 mt-1">Mariage Lorraine &amp; Paul — {dateRangeLabel}</p>
       </div>
 
       {/* Global stats */}

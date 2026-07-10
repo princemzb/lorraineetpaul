@@ -718,7 +718,7 @@ export default function RSVPPage() {
           <GoldLink href="/">Retour à l&apos;accueil</GoldLink>
 
           <footer className="mt-12 text-sm" style={{ color: IVOIRE_DIM, opacity: 0.6 }}>
-            <p>Loraine &amp; Paul — {dateRangeLabel}</p>
+            <p>Lorraine &amp; Paul — {dateRangeLabel}</p>
             <p className="mt-2 text-xs opacity-70">
               Conçu par{' '}
               <Link href="/contact" className="hover:opacity-100 transition-opacity" style={{ color: OR }}>
@@ -745,7 +745,7 @@ export default function RSVPPage() {
         <Link href="/" className="text-sm mb-4 inline-block transition-opacity hover:opacity-80" style={{ color: OR }}>
           ← Retour à l&apos;accueil
         </Link>
-        <h1 className="font-display text-4xl mb-2 text-gold-shine">Loraine &amp; Paul</h1>
+        <h1 className="font-display text-4xl mb-2 text-gold-shine">Lorraine &amp; Paul</h1>
         <p style={{ color: IVOIRE_DIM }}>Confirmez votre présence à notre mariage</p>
       </motion.div>
 
@@ -1001,7 +1001,7 @@ export default function RSVPPage() {
         </Card>
 
         <footer className="mt-8 text-center text-sm" style={{ color: IVOIRE_DIM, opacity: 0.6 }}>
-          <p>Loraine &amp; Paul — {dateRangeLabel}</p>
+          <p>Lorraine &amp; Paul — {dateRangeLabel}</p>
           <p className="mt-2 text-xs opacity-70">
             Conçu par{' '}
             <Link href="/contact" className="hover:opacity-100 transition-opacity" style={{ color: OR }}>

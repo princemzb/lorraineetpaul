@@ -17,8 +17,8 @@ const manrope = Manrope({
 })
 
 export const metadata: Metadata = {
-  title: 'Mariage Loraine & Paul',
-  description: 'Site officiel du mariage de Loraine et Paul',
+  title: 'Mariage Lorraine & Paul',
+  description: 'Site officiel du mariage de Lorraine et Paul',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

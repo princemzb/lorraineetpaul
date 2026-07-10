@@ -60,7 +60,7 @@ export async function sendConfirmationEmail({
 <body>
   <div class="container">
     <div class="header">
-      <h1>Loraine &amp; Paul</h1>
+      <h1>Lorraine &amp; Paul</h1>
       <p>${weddingDate} — ${ceremonyLabel}</p>
     </div>
     <div class="body">
@@ -72,7 +72,7 @@ export async function sendConfirmationEmail({
       <a href="${invitationUrl}" class="btn">Voir mon invitation</a>
     </div>
     <div class="footer">
-      <p>Loraine &amp; Paul — ${weddingDate}</p>
+      <p>Lorraine &amp; Paul — ${weddingDate}</p>
       <p>Ce message a été envoyé automatiquement, merci de ne pas y répondre.</p>
     </div>
   </div>
@@ -81,9 +81,9 @@ export async function sendConfirmationEmail({
   `
 
   await transporter.sendMail({
-    from: process.env.MAIL_FROM || 'Loraine & Paul <noreply@mariage.fr>',
+    from: process.env.MAIL_FROM || 'Lorraine & Paul <noreply@mariage.fr>',
     to,
-    subject: `Votre réponse pour le ${ceremonyLabel} de Loraine & Paul`,
+    subject: `Votre réponse pour le ${ceremonyLabel} de Lorraine & Paul`,
     html,
   })
 }
@@ -121,7 +121,7 @@ export async function sendInvitationEmail({
 <body>
   <div class="container">
     <div class="header">
-      <h1>Loraine &amp; Paul</h1>
+      <h1>Lorraine &amp; Paul</h1>
       <p>${weddingDate} — ${ceremonyLabel}</p>
     </div>
     <div class="body">
@@ -132,7 +132,7 @@ export async function sendInvitationEmail({
         <a href="${invitationUrl}" class="btn">Répondre à l'invitation</a>
       </div>
       <p>Nous espérons vous compter parmi nous pour partager ce moment de bonheur.</p>
-      <p>Avec toute notre affection,<br><strong>Loraine &amp; Paul</strong></p>
+      <p>Avec toute notre affection,<br><strong>Lorraine &amp; Paul</strong></p>
     </div>
     <div class="footer">
       <p>${weddingDate}</p>
@@ -144,9 +144,9 @@ export async function sendInvitationEmail({
   `
 
   await transporter.sendMail({
-    from: process.env.MAIL_FROM || 'Loraine & Paul <noreply@mariage.fr>',
+    from: process.env.MAIL_FROM || 'Lorraine & Paul <noreply@mariage.fr>',
     to,
-    subject: `Invitation — ${ceremonyLabel} de Loraine & Paul`,
+    subject: `Invitation — ${ceremonyLabel} de Lorraine & Paul`,
     html,
   })
 }
@@ -212,7 +212,7 @@ export async function sendContactNotificationEmail({
 </html>`
 
   await transporter.sendMail({
-    from: process.env.MAIL_FROM || 'Loraine & Paul <noreply@mariage.fr>',
+    from: process.env.MAIL_FROM || 'Lorraine & Paul <noreply@mariage.fr>',
     to,
     replyTo: email,
     subject: `Nouvelle demande de ${firstName} ${lastName} — ${eventTypeLabel}`,

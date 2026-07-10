@@ -35,7 +35,7 @@ export default function GuestQRCode({ guestId, guestName }: { guestId: string; g
       if (nav.share && (!nav.canShare || nav.canShare({ files: [file] }))) {
         await nav.share({
           files: [file],
-          title: 'Mon QR code — Mariage Loraine & Paul',
+          title: 'Mon QR code — Mariage Lorraine & Paul',
           text: 'Voici mon QR code à présenter le jour du mariage.',
         })
         return

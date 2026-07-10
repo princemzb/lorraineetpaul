@@ -24,7 +24,7 @@ export default function AdminSidebar({ ceremonies, email }: { ceremonies: Ceremo
         style={{ background: 'linear-gradient(180deg, #8b7355, #6b5a45)' }}
       >
         <span className="text-white font-bold" style={{ fontFamily: 'Georgia, serif' }}>
-          Loraine & Paul
+          Lorraine & Paul
         </span>
         <button
           onClick={() => setOpen(true)}
@@ -55,7 +55,7 @@ export default function AdminSidebar({ ceremonies, email }: { ceremonies: Ceremo
         <div className="p-6 border-b border-white/10 flex items-start justify-between">
           <div>
             <h1 className="text-white font-bold text-lg" style={{ fontFamily: 'Georgia, serif' }}>
-              Loraine & Paul
+              Lorraine & Paul
             </h1>
             <p className="text-white/60 text-xs mt-1">Administration</p>
           </div>

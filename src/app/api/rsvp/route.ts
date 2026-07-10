@@ -162,7 +162,7 @@ table{width:100%}
 <body>
   <div class="wrap">
     <div class="hd">
-      <h1>Loraine &amp; Paul</h1>
+      <h1>Lorraine &amp; Paul</h1>
       <p>${dateRangeLabel}</p>
     </div>
     <div class="bd">
@@ -171,17 +171,17 @@ table{width:100%}
       <table>${ceremonyRows}</table>
       ${notes ? `<p style="margin-top:20px;background:#fdf3e3;padding:12px 16px;border-radius:6px;font-size:14px;color:#8b7355"><strong>Vos notes :</strong> ${notes}</p>` : ''}
       <p style="margin-top:24px">Si vous souhaitez modifier votre réponse, n'hésitez pas à <a href="${appUrl}/rsvp" style="color:#8b7355">remplir à nouveau le formulaire</a>.</p>
-      <p>Avec toute notre affection,<br><strong>Loraine &amp; Paul</strong></p>
+      <p>Avec toute notre affection,<br><strong>Lorraine &amp; Paul</strong></p>
     </div>
-    <div class="ft"><p>Mariage Loraine &amp; Paul — ${dateRangeLabel}</p></div>
+    <div class="ft"><p>Mariage Lorraine &amp; Paul — ${dateRangeLabel}</p></div>
   </div>
 </body>
 </html>`
 
   await transporter.sendMail({
-    from: process.env.MAIL_FROM || 'Loraine & Paul <noreply@mariage.fr>',
+    from: process.env.MAIL_FROM || 'Lorraine & Paul <noreply@mariage.fr>',
     to,
-    subject: 'Confirmation de votre présence — Mariage Loraine & Paul',
+    subject: 'Confirmation de votre présence — Mariage Lorraine & Paul',
     html,
   })
 }

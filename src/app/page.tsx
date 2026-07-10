@@ -140,7 +140,7 @@ export default function HomePage() {
           transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
           className="font-display text-6xl md:text-8xl mb-2 text-gold-shine"
         >
-          Loraine
+          Lorraine
         </motion.h1>
         <motion.div
           initial={{ opacity: 0 }}
@@ -311,7 +311,7 @@ export default function HomePage() {
         className="relative py-8 text-center text-sm border-t"
         style={{ borderColor: 'var(--noir-border)', color: 'var(--ivoire-dim)' }}
       >
-        <p>Loraine &amp; Paul — {dateRangeLabel}</p>
+        <p>Lorraine &amp; Paul — {dateRangeLabel}</p>
         <p className="mt-3 text-xs opacity-60">
           Conçu par{' '}
           <Link href="/contact" className="hover:opacity-100 transition-opacity" style={{ color: 'var(--or-light)' }}>
