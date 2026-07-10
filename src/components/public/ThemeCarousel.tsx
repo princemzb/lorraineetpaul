@@ -53,12 +53,20 @@ export default function ThemeCarousel({
         />
       </AnimatePresence>
 
-      {/* Dark shape on the right to carry the text */}
+      {/* Dark shape on the right to carry the text — sm and up */}
       <div
-        className="absolute inset-0 -z-10"
+        className="hidden sm:block absolute inset-0 -z-10"
         style={{
           background:
             'linear-gradient(90deg, transparent 0%, transparent 38%, rgba(3,3,3,0.5) 55%, rgba(3,3,3,0.88) 75%, rgba(3,3,3,0.93) 100%)',
+        }}
+      />
+      {/* Bottom scrim to carry the text on mobile */}
+      <div
+        className="sm:hidden absolute inset-x-0 bottom-0 h-[70%] -z-10"
+        style={{
+          background:
+            'linear-gradient(0deg, rgba(3,3,3,0.97) 0%, rgba(3,3,3,0.85) 40%, rgba(3,3,3,0.4) 75%, transparent 100%)',
         }}
       />
       <div
@@ -87,7 +95,7 @@ export default function ThemeCarousel({
       </div>
 
       {/* Text */}
-      <div className="absolute inset-y-0 right-0 w-full sm:w-3/5 lg:w-1/2 flex items-center px-8 sm:px-12 lg:px-16">
+      <div className="absolute inset-0 sm:left-auto w-full sm:w-3/5 lg:w-1/2 flex items-end sm:items-center justify-center sm:justify-start px-6 sm:px-12 lg:px-16 pb-40 sm:pb-0 text-center sm:text-left">
         <AnimatePresence initial={false} mode="wait">
           <motion.p
             key={current.id}
@@ -95,7 +103,7 @@ export default function ThemeCarousel({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.5, delay: 0.15 }}
-            className="text-xl md:text-2xl leading-relaxed font-display"
+            className="text-lg sm:text-xl md:text-2xl leading-relaxed font-display"
             style={{ color: 'var(--ivoire)' }}
           >
             {current.description || 'Aucune description pour cette photo.'}
