@@ -30,17 +30,10 @@ function menuLabel(inv: Invitation): string {
   return inv.menuItem?.name || '—'
 }
 
-const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }> = {
-  PENDING: { label: 'En attente', color: '#d97706', bg: '#fef9f0' },
-  CONFIRMED: { label: 'Confirmé', color: '#16a34a', bg: '#f0fdf4' },
-  DECLINED: { label: 'Décliné', color: '#dc2626', bg: '#fef2f2' },
-}
-
 export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'RELIGIEUX' | 'VIN_HONNEUR' | 'SOIREE' }) {
   const [invitations, setInvitations] = useState<Invitation[]>([])
   const [guests, setGuests] = useState<Guest[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<string>('ALL')
   const [showAddForm, setShowAddForm] = useState(false)
   const [newGuestId, setNewGuestId] = useState('')
   const [newFirstName, setNewFirstName] = useState('')
@@ -78,10 +71,6 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
   }, [ceremony])
 
   useEffect(() => { load() }, [load])
-
-  const filteredInvitations = invitations.filter(
-    (inv) => filter === 'ALL' || inv.status === filter
-  )
 
   const copyLink = (token: string, id: string) => {
     const url = `${window.location.origin}/invitation/${token}`
@@ -172,24 +161,6 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
         </div>
       </div>
 
-      {/* Filter */}
-      <div className="flex gap-2 mb-6">
-        {[['ALL', 'Tous'], ['PENDING', 'En attente'], ['CONFIRMED', 'Confirmés'], ['DECLINED', 'Déclinés']].map(([val, lbl]) => (
-          <button
-            key={val}
-            onClick={() => setFilter(val)}
-            className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
-            style={{
-              background: filter === val ? '#8b7355' : 'white',
-              color: filter === val ? 'white' : '#8b7355',
-              border: `1px solid ${filter === val ? '#8b7355' : '#e8d5b7'}`,
-            }}
-          >
-            {lbl}
-          </button>
-        ))}
-      </div>
-
       {/* Add form */}
       {showAddForm && (
         <div className="bg-white rounded-2xl border shadow-sm p-6 mb-6" style={{ borderColor: '#f0e6d3' }}>
@@ -238,7 +209,7 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
 
       {/* Table */}
       <div className="bg-white rounded-2xl shadow-sm border overflow-hidden" style={{ borderColor: '#f0e6d3' }}>
-        {filteredInvitations.length === 0 ? (
+        {invitations.length === 0 ? (
           <div className="p-12 text-center text-gray-400">
             <div className="text-4xl mb-3">📋</div>
             <p>Aucune invitation trouvée</p>
@@ -249,7 +220,6 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
               <tr style={{ background: '#fdf3e3', borderBottom: '2px solid #f0e6d3' }}>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Invité</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Contact</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Statut</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Menu</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Accomp.</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Notes</th>
@@ -258,10 +228,9 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
               </tr>
             </thead>
             <tbody>
-              {filteredInvitations.map((inv, i) => {
-                const s = STATUS_LABELS[inv.status]
+              {invitations.map((inv, i) => {
                 return (
-                  <tr key={inv.id} style={{ borderBottom: i < filteredInvitations.length - 1 ? '1px solid #f0e6d3' : 'none' }}>
+                  <tr key={inv.id} style={{ borderBottom: i < invitations.length - 1 ? '1px solid #f0e6d3' : 'none' }}>
                     <td className="px-4 py-3">
                       <div className="font-medium text-gray-800">
                         {inv.guest.lastName} {inv.guest.firstName}
@@ -270,11 +239,6 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
                     <td className="px-4 py-3 text-gray-500">
                       {inv.guest.email && <div>{inv.guest.email}</div>}
                       {inv.guest.phone && <div>{inv.guest.phone}</div>}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ color: s.color, background: s.bg }}>
-                        {s.label}
-                      </span>
                     </td>
                     <td className="px-4 py-3 text-gray-600">{menuLabel(inv)}</td>
                     <td className="px-4 py-3 text-gray-600 text-center">

@@ -63,7 +63,6 @@ export default function InvitationClient() {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
 
-  const [selectedStatus, setSelectedStatus] = useState<'CONFIRMED' | 'DECLINED' | null>(null)
   const [selectedMenu, setSelectedMenu] = useState('')
   const [selectedMenuId, setSelectedMenuId] = useState('')
   const [selectedEntreeId, setSelectedEntreeId] = useState('')
@@ -88,8 +87,7 @@ export default function InvitationClient() {
             .then((configs: CeremonyConfig[]) => {
               setCeremonyConfig(configs.find((c) => c.ceremony === data.invitation.ceremony) || null)
             })
-          if (data.invitation.status !== 'PENDING') {
-            setSelectedStatus(data.invitation.status)
+          if (data.invitation.status === 'CONFIRMED') {
             setSelectedMenu(data.invitation.menuItemId || '')
             setSelectedMenuId(data.invitation.menuId || '')
             setSelectedEntreeId(data.invitation.entreeOptionId || '')
@@ -117,30 +115,26 @@ export default function InvitationClient() {
   }
 
   const handleSubmit = async () => {
-    if (!selectedStatus) return
-
-    if (selectedStatus === 'CONFIRMED') {
-      if (isSoiree && composableMenus.length > 0) {
-        if (!selectedMenuId) {
-          alert('Veuillez choisir un menu')
-          return
-        }
-        if (optionsFor('ENTREE').length > 0 && !selectedEntreeId) {
-          alert('Veuillez choisir une entrée')
-          return
-        }
-        if (optionsFor('PLAT').length > 0 && !selectedPlatId) {
-          alert('Veuillez choisir un plat')
-          return
-        }
-        if (optionsFor('DESSERT').length > 0 && !selectedDessertId) {
-          alert('Veuillez choisir un dessert')
-          return
-        }
-      } else if (!isSoiree && menuItems.length > 0 && !selectedMenu) {
+    if (isSoiree && composableMenus.length > 0) {
+      if (!selectedMenuId) {
         alert('Veuillez choisir un menu')
         return
       }
+      if (optionsFor('ENTREE').length > 0 && !selectedEntreeId) {
+        alert('Veuillez choisir une entrée')
+        return
+      }
+      if (optionsFor('PLAT').length > 0 && !selectedPlatId) {
+        alert('Veuillez choisir un plat')
+        return
+      }
+      if (optionsFor('DESSERT').length > 0 && !selectedDessertId) {
+        alert('Veuillez choisir un dessert')
+        return
+      }
+    } else if (!isSoiree && menuItems.length > 0 && !selectedMenu) {
+      alert('Veuillez choisir un menu')
+      return
     }
 
     setSubmitting(true)
@@ -148,12 +142,12 @@ export default function InvitationClient() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        status: selectedStatus,
-        menuItemId: selectedStatus === 'CONFIRMED' && !isSoiree ? selectedMenu || null : null,
-        menuId: selectedStatus === 'CONFIRMED' && isSoiree ? selectedMenuId || null : null,
-        entreeOptionId: selectedStatus === 'CONFIRMED' && isSoiree ? selectedEntreeId || null : null,
-        platOptionId: selectedStatus === 'CONFIRMED' && isSoiree ? selectedPlatId || null : null,
-        dessertOptionId: selectedStatus === 'CONFIRMED' && isSoiree ? selectedDessertId || null : null,
+        status: 'CONFIRMED',
+        menuItemId: !isSoiree ? selectedMenu || null : null,
+        menuId: isSoiree ? selectedMenuId || null : null,
+        entreeOptionId: isSoiree ? selectedEntreeId || null : null,
+        platOptionId: isSoiree ? selectedPlatId || null : null,
+        dessertOptionId: isSoiree ? selectedDessertId || null : null,
         notes,
       }),
     })
@@ -278,27 +272,21 @@ export default function InvitationClient() {
               transition={{ duration: 0.5 }}
             >
               <Card className="p-10 text-center">
-                <div className="text-5xl mb-4">{selectedStatus === 'CONFIRMED' ? '🎉' : '💔'}</div>
-                <h3 className="font-display text-2xl mb-3 text-gold-shine">
-                  {selectedStatus === 'CONFIRMED' ? 'À très bientôt !' : 'Réponse enregistrée'}
-                </h3>
+                <div className="text-5xl mb-4">🎉</div>
+                <h3 className="font-display text-2xl mb-3 text-gold-shine">À très bientôt !</h3>
                 <p className="mb-4" style={{ color: 'var(--ivoire-dim)' }}>
-                  {selectedStatus === 'CONFIRMED'
-                    ? 'Votre présence a été confirmée. Nous sommes ravis de vous compter parmi nous !'
-                    : 'Votre réponse a bien été enregistrée. Nous espérons vous voir bientôt.'}
+                  Votre présence a été confirmée. Nous sommes ravis de vous compter parmi nous !
                 </p>
                 {invitation.guest.email && (
                   <p className="text-sm mb-6" style={{ color: 'var(--ivoire-dim)', opacity: 0.7 }}>
                     Un email de confirmation a été envoyé à {invitation.guest.email}
                   </p>
                 )}
-                {selectedStatus === 'CONFIRMED' && (
-                  <div className="pt-2 border-t mb-2" style={{ borderColor: 'var(--noir-border)' }}>
-                    <div className="pt-6">
-                      <GuestQRCode guestId={invitation.guest.id} guestName={guestName} />
-                    </div>
+                <div className="pt-2 border-t mb-2" style={{ borderColor: 'var(--noir-border)' }}>
+                  <div className="pt-6">
+                    <GuestQRCode guestId={invitation.guest.id} guestName={guestName} />
                   </div>
-                )}
+                </div>
                 <button
                   onClick={() => setSubmitted(false)}
                   className="mt-6 text-sm underline"
@@ -320,47 +308,8 @@ export default function InvitationClient() {
                   </div>
                 )}
 
-                {/* RSVP Choice */}
-                <div className="mb-8">
-                  <h3 className="text-lg font-medium mb-4" style={{ color: 'var(--or-light)' }}>
-                    Serez-vous présent(e) ?
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setSelectedStatus('CONFIRMED')}
-                      className="py-4 px-6 rounded-xl border text-center transition-colors"
-                      style={{
-                        borderColor: selectedStatus === 'CONFIRMED' ? 'var(--pomme)' : 'var(--noir-border)',
-                        background: selectedStatus === 'CONFIRMED' ? 'var(--pomme-deep)' : 'transparent',
-                        color: selectedStatus === 'CONFIRMED' ? 'var(--pomme-light)' : 'var(--ivoire-dim)',
-                      }}
-                    >
-                      <div className="text-2xl mb-1">✓</div>
-                      <div className="font-medium">Je confirme</div>
-                      <div className="text-sm opacity-70">ma présence</div>
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setSelectedStatus('DECLINED')}
-                      className="py-4 px-6 rounded-xl border text-center transition-colors"
-                      style={{
-                        borderColor: selectedStatus === 'DECLINED' ? '#dc2626' : 'var(--noir-border)',
-                        background: selectedStatus === 'DECLINED' ? 'rgba(220,38,38,0.15)' : 'transparent',
-                        color: selectedStatus === 'DECLINED' ? '#f87171' : 'var(--ivoire-dim)',
-                      }}
-                    >
-                      <div className="text-2xl mb-1">✗</div>
-                      <div className="font-medium">Je décline</div>
-                      <div className="text-sm opacity-70">avec regrets</div>
-                    </motion.button>
-                  </div>
-                </div>
-
                 {/* Menu Choice — cérémonies à menu simple */}
-                {selectedStatus === 'CONFIRMED' && !isSoiree && menuItems.length > 0 && (
+                {!isSoiree && menuItems.length > 0 && (
                   <div className="mb-8">
                     <h3 className="text-lg font-medium mb-4" style={{ color: 'var(--or-light)' }}>
                       Choisissez votre menu
@@ -408,7 +357,7 @@ export default function InvitationClient() {
                 )}
 
                 {/* Menu composable — Soirée : choix du menu puis entrée/plat/dessert */}
-                {selectedStatus === 'CONFIRMED' && isSoiree && composableMenus.length > 0 && (
+                {isSoiree && composableMenus.length > 0 && (
                   <div className="mb-8 space-y-6">
                     <div>
                       <h3 className="text-lg font-medium mb-4" style={{ color: 'var(--or-light)' }}>
@@ -493,28 +442,26 @@ export default function InvitationClient() {
                 )}
 
                 {/* Notes */}
-                {selectedStatus && (
-                  <div className="mb-8">
-                    <h3 className="text-lg font-medium mb-3" style={{ color: 'var(--or-light)' }}>
-                      Informations complémentaires
-                      <span className="text-sm font-normal ml-2" style={{ color: 'var(--ivoire-dim)' }}>
-                        (optionnel)
-                      </span>
-                    </h3>
-                    <textarea
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Allergies, régime particulier, accessibilité..."
-                      rows={3}
-                      className="w-full border rounded-xl p-4 resize-none focus:outline-none bg-transparent"
-                      style={{ borderColor: 'var(--noir-border)', color: 'var(--ivoire)' }}
-                    />
-                  </div>
-                )}
+                <div className="mb-8">
+                  <h3 className="text-lg font-medium mb-3" style={{ color: 'var(--or-light)' }}>
+                    Informations complémentaires
+                    <span className="text-sm font-normal ml-2" style={{ color: 'var(--ivoire-dim)' }}>
+                      (optionnel)
+                    </span>
+                  </h3>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Allergies, régime particulier, accessibilité..."
+                    rows={3}
+                    className="w-full border rounded-xl p-4 resize-none focus:outline-none bg-transparent"
+                    style={{ borderColor: 'var(--noir-border)', color: 'var(--ivoire)' }}
+                  />
+                </div>
 
                 {/* Submit */}
-                <GoldButton onClick={handleSubmit} disabled={!selectedStatus || submitting} className="w-full py-4 text-lg">
-                  {submitting ? 'Envoi en cours...' : 'Confirmer ma réponse'}
+                <GoldButton onClick={handleSubmit} disabled={submitting} className="w-full py-4 text-lg">
+                  {submitting ? 'Envoi en cours...' : '✓ Confirmer ma présence'}
                 </GoldButton>
               </Card>
             </motion.div>
