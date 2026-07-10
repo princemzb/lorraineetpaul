@@ -16,9 +16,23 @@ const manrope = Manrope({
   weight: ['300', '400', '500', '600', '700'],
 })
 
+const appUrl = process.env.APP_URL || 'http://localhost:3000'
+const envelopeImageUrl = `${appUrl}/invitation-envelope.jpg`
+
 export const metadata: Metadata = {
   title: 'Mariage Lorraine & Paul',
   description: 'Site officiel du mariage de Lorraine et Paul',
+  openGraph: {
+    title: 'Vous êtes invité(e) au mariage de Lorraine & Paul',
+    description: 'Cliquez sur l\'enveloppe pour découvrir le site et confirmer votre présence.',
+    images: [{ url: envelopeImageUrl, width: 1200, height: 630, alt: 'Invitation Lorraine & Paul' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Vous êtes invité(e) au mariage de Lorraine & Paul',
+    description: 'Cliquez sur l\'enveloppe pour découvrir le site et confirmer votre présence.',
+    images: [envelopeImageUrl],
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -2,7 +2,7 @@
 
 export default function InviteButton({ fullWidth }: { fullWidth?: boolean }) {
   const handleInvite = () => {
-    const url = `${window.location.origin}/rsvp`
+    const url = window.location.origin
     const message = `Vous êtes invité(e) à notre mariage ! Découvrez votre invitation et confirmez votre présence : ${url}`
     const waUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
     window.open(waUrl, '_blank')
