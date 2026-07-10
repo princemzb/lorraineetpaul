@@ -8,11 +8,10 @@ type Invitation = {
   id: string
   token: string
   ceremony: 'CIVIL' | 'RELIGIEUX' | 'VIN_HONNEUR' | 'SOIREE'
-  status: 'PENDING' | 'CONFIRMED' | 'DECLINED'
+  status: 'PENDING' | 'CONFIRMED'
   notes?: string
   emailSent: boolean
   respondedAt?: string
-  accompanistCount: number
   guest: Guest
   menuItem?: MenuItem
   menu?: MenuItem
@@ -221,7 +220,6 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Invité</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Contact</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Menu</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Accomp.</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Notes</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Répondu le</th>
                 <th className="text-right px-4 py-3 font-medium text-gray-600">Actions</th>
@@ -241,13 +239,6 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
                       {inv.guest.phone && <div>{inv.guest.phone}</div>}
                     </td>
                     <td className="px-4 py-3 text-gray-600">{menuLabel(inv)}</td>
-                    <td className="px-4 py-3 text-gray-600 text-center">
-                      {inv.accompanistCount > 0 ? (
-                        <span className="px-2 py-0.5 rounded-full text-xs" style={{ background: '#fdf3e3', color: '#8b7355' }}>
-                          +{inv.accompanistCount}
-                        </span>
-                      ) : '—'}
-                    </td>
                     <td className="px-4 py-3 text-gray-500 max-w-32 truncate" title={inv.notes || ''}>{inv.notes || '—'}</td>
                     <td className="px-4 py-3 text-gray-500">
                       {inv.respondedAt ? new Date(inv.respondedAt).toLocaleDateString('fr-FR') : '—'}

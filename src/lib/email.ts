@@ -25,19 +25,16 @@ export async function sendConfirmationEmail({
   to,
   guestName,
   ceremony,
-  status,
   menuName,
   invitationUrl,
 }: {
   to: string
   guestName: string
   ceremony: 'CIVIL' | 'RELIGIEUX' | 'VIN_HONNEUR' | 'SOIREE'
-  status: 'CONFIRMED' | 'DECLINED'
   menuName?: string
   invitationUrl: string
 }) {
   const { label: ceremonyLabel, dateLabel: weddingDate } = await getCeremonyDisplay(ceremony)
-  const statusLabel = status === 'CONFIRMED' ? 'confirmé votre présence' : 'décliné l\'invitation'
 
   const html = `
 <!DOCTYPE html>
@@ -65,9 +62,9 @@ export async function sendConfirmationEmail({
     </div>
     <div class="body">
       <p>Cher(e) ${guestName},</p>
-      <p>Nous avons bien reçu votre réponse. Vous avez <strong>${statusLabel}</strong> pour notre <strong>${ceremonyLabel}</strong>.</p>
-      ${status === 'CONFIRMED' && menuName ? `<div class="highlight"><strong>Votre choix de menu :</strong> ${menuName}</div>` : ''}
-      ${status === 'CONFIRMED' ? '<p>Nous sommes ravis de vous compter parmi nos invités et avons hâte de partager ce moment inoubliable avec vous.</p>' : '<p>Nous sommes désolés que vous ne puissiez pas être présent(e). Nous espérons que vous penserez à nous ce jour-là.</p>'}
+      <p>Nous avons bien reçu votre réponse. Vous avez <strong>confirmé votre présence</strong> pour notre <strong>${ceremonyLabel}</strong>.</p>
+      ${menuName ? `<div class="highlight"><strong>Votre choix de menu :</strong> ${menuName}</div>` : ''}
+      <p>Nous sommes ravis de vous compter parmi nos invités et avons hâte de partager ce moment inoubliable avec vous.</p>
       <p>Si vous souhaitez modifier votre réponse, vous pouvez accéder à votre invitation en cliquant sur le bouton ci-dessous :</p>
       <a href="${invitationUrl}" class="btn">Voir mon invitation</a>
     </div>

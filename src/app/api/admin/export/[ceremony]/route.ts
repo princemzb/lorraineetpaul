@@ -18,12 +18,6 @@ export async function GET(req: Request, { params }: { params: Promise<{ ceremony
     orderBy: [{ guest: { lastName: 'asc' } }],
   })
 
-  const statusLabels: Record<string, string> = {
-    PENDING: 'En attente',
-    CONFIRMED: 'Confirmé',
-    DECLINED: 'Décliné',
-  }
-
   const rows = invitations.map((inv) => {
     const menu =
       ceremonyUpper === 'SOIREE'
@@ -42,9 +36,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ ceremony
       email: inv.guest.email || '',
       telephone: inv.guest.phone || '',
       ceremonie: ceremonyConfig?.name || ceremonyUpper,
-      statut: statusLabels[inv.status] || inv.status,
       menu,
-      accompagnants: inv.accompanistCount,
       notes: inv.notes || '',
       date_reponse: inv.respondedAt ? inv.respondedAt.toLocaleDateString('fr-FR') : '',
       email_envoye: inv.emailSent ? 'Oui' : 'Non',

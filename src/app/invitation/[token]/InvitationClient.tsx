@@ -32,7 +32,7 @@ type Invitation = {
   id: string
   token: string
   ceremony: 'CIVIL' | 'RELIGIEUX' | 'VIN_HONNEUR' | 'SOIREE'
-  status: 'PENDING' | 'CONFIRMED' | 'DECLINED'
+  status: 'PENDING' | 'CONFIRMED'
   menuItemId?: string
   menuId?: string
   entreeOptionId?: string

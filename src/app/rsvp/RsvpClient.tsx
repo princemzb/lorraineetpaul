@@ -28,7 +28,6 @@ type ComposableMenu = { id: string; name: string; options: MenuOption[] }
 type CeremonyForm = {
   selected: boolean
   menuItemId: string
-  accompanistCount: number
 }
 
 type SoireeForm = {
@@ -37,7 +36,6 @@ type SoireeForm = {
   entreeOptionId: string
   platOptionId: string
   dessertOptionId: string
-  accompanistCount: number
 }
 
 type FormData = {
@@ -205,39 +203,6 @@ function CeremonyCard({
               </div>
             </div>
           )}
-
-          {/* Accompanists */}
-          <div>
-            <label className="block text-sm font-medium mb-2" style={{ color: OR }}>
-              Nombre d&apos;accompagnants
-            </label>
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => onChange({ accompanistCount: Math.max(0, data.accompanistCount - 1) })}
-                className="w-10 h-10 rounded-full border flex items-center justify-center text-lg font-bold transition-colors"
-                style={{ borderColor: BORDER, color: OR }}
-              >
-                −
-              </button>
-              <span className="text-2xl font-bold w-8 text-center" style={{ color: OR }}>
-                {data.accompanistCount}
-              </span>
-              <button
-                type="button"
-                onClick={() => onChange({ accompanistCount: Math.min(20, data.accompanistCount + 1) })}
-                className="w-10 h-10 rounded-full border flex items-center justify-center text-lg font-bold transition-colors"
-                style={{ borderColor: BORDER, color: OR }}
-              >
-                +
-              </button>
-              <span className="text-sm ml-2" style={{ color: IVOIRE_DIM }}>
-                {data.accompanistCount === 0
-                  ? 'Seul(e)'
-                  : `${data.accompanistCount} accompagnant${data.accompanistCount > 1 ? 's' : ''}`}
-              </span>
-            </div>
-          </div>
         </div>
       )}
     </div>
@@ -401,39 +366,6 @@ function SoireeMenuCard({
               />
             </>
           )}
-
-          {/* Accompanists */}
-          <div>
-            <label className="block text-sm font-medium mb-2" style={{ color: OR }}>
-              Nombre d&apos;accompagnants
-            </label>
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => onChange({ accompanistCount: Math.max(0, data.accompanistCount - 1) })}
-                className="w-10 h-10 rounded-full border flex items-center justify-center text-lg font-bold transition-colors"
-                style={{ borderColor: BORDER, color: OR }}
-              >
-                −
-              </button>
-              <span className="text-2xl font-bold w-8 text-center" style={{ color: OR }}>
-                {data.accompanistCount}
-              </span>
-              <button
-                type="button"
-                onClick={() => onChange({ accompanistCount: Math.min(20, data.accompanistCount + 1) })}
-                className="w-10 h-10 rounded-full border flex items-center justify-center text-lg font-bold transition-colors"
-                style={{ borderColor: BORDER, color: OR }}
-              >
-                +
-              </button>
-              <span className="text-sm ml-2" style={{ color: IVOIRE_DIM }}>
-                {data.accompanistCount === 0
-                  ? 'Seul(e)'
-                  : `${data.accompanistCount} accompagnant${data.accompanistCount > 1 ? 's' : ''}`}
-              </span>
-            </div>
-          </div>
         </div>
       )}
     </div>
@@ -466,10 +398,10 @@ export default function RsvpClient() {
     lastName: '',
     email: '',
     phone: '',
-    civil: { selected: false, menuItemId: '', accompanistCount: 0 },
-    religieux: { selected: false, menuItemId: '', accompanistCount: 0 },
-    vinHonneur: { selected: false, menuItemId: '', accompanistCount: 0 },
-    soiree: { selected: false, menuId: '', entreeOptionId: '', platOptionId: '', dessertOptionId: '', accompanistCount: 0 },
+    civil: { selected: false, menuItemId: '' },
+    religieux: { selected: false, menuItemId: '' },
+    vinHonneur: { selected: false, menuItemId: '' },
+    soiree: { selected: false, menuId: '', entreeOptionId: '', platOptionId: '', dessertOptionId: '' },
     notes: '',
   })
 
@@ -584,21 +516,18 @@ export default function RsvpClient() {
       ceremonies.push({
         ceremony: 'CIVIL',
         menuItemId: form.civil.menuItemId || null,
-        accompanistCount: form.civil.accompanistCount,
       })
     }
     if (form.religieux.selected) {
       ceremonies.push({
         ceremony: 'RELIGIEUX',
         menuItemId: form.religieux.menuItemId || null,
-        accompanistCount: form.religieux.accompanistCount,
       })
     }
     if (form.vinHonneur.selected) {
       ceremonies.push({
         ceremony: 'VIN_HONNEUR',
         menuItemId: form.vinHonneur.menuItemId || null,
-        accompanistCount: form.vinHonneur.accompanistCount,
       })
     }
     if (form.soiree.selected) {
@@ -608,7 +537,6 @@ export default function RsvpClient() {
         entreeOptionId: form.soiree.entreeOptionId || null,
         platOptionId: form.soiree.platOptionId || null,
         dessertOptionId: form.soiree.dessertOptionId || null,
-        accompanistCount: form.soiree.accompanistCount,
       })
     }
 
@@ -658,7 +586,6 @@ export default function RsvpClient() {
             {form.civil.selected && (
               <div className="mb-2 text-sm" style={{ color: IVOIRE }}>
                 <strong>{configFor('CIVIL').emoji} {configFor('CIVIL').name}</strong>
-                {form.civil.accompanistCount > 0 && ` + ${form.civil.accompanistCount} accompagnant${form.civil.accompanistCount > 1 ? 's' : ''}`}
                 {form.civil.menuItemId && (
                   <div style={{ color: IVOIRE_DIM }}>
                     Menu : {civilMenus.find((m) => m.id === form.civil.menuItemId)?.name}
@@ -669,7 +596,6 @@ export default function RsvpClient() {
             {form.religieux.selected && (
               <div className="mb-2 text-sm" style={{ color: IVOIRE }}>
                 <strong>{configFor('RELIGIEUX').emoji} {configFor('RELIGIEUX').name}</strong>
-                {form.religieux.accompanistCount > 0 && ` + ${form.religieux.accompanistCount} accompagnant${form.religieux.accompanistCount > 1 ? 's' : ''}`}
                 {form.religieux.menuItemId && (
                   <div style={{ color: IVOIRE_DIM }}>
                     Menu : {religieuxMenus.find((m) => m.id === form.religieux.menuItemId)?.name}
@@ -680,7 +606,6 @@ export default function RsvpClient() {
             {form.vinHonneur.selected && (
               <div className="mb-2 text-sm" style={{ color: IVOIRE }}>
                 <strong>{configFor('VIN_HONNEUR').emoji} {configFor('VIN_HONNEUR').name}</strong>
-                {form.vinHonneur.accompanistCount > 0 && ` + ${form.vinHonneur.accompanistCount} accompagnant${form.vinHonneur.accompanistCount > 1 ? 's' : ''}`}
                 {form.vinHonneur.menuItemId && (
                   <div style={{ color: IVOIRE_DIM }}>
                     Menu : {vinHonneurMenus.find((m) => m.id === form.vinHonneur.menuItemId)?.name}
@@ -691,7 +616,6 @@ export default function RsvpClient() {
             {form.soiree.selected && (
               <div className="text-sm" style={{ color: IVOIRE }}>
                 <strong>{configFor('SOIREE').emoji} {configFor('SOIREE').name}</strong>
-                {form.soiree.accompanistCount > 0 && ` + ${form.soiree.accompanistCount} accompagnant${form.soiree.accompanistCount > 1 ? 's' : ''}`}
                 {form.soiree.menuId && (
                   <div style={{ color: IVOIRE_DIM }}>
                     {soireeMenus.find((m) => m.id === form.soiree.menuId)?.name}
@@ -886,11 +810,6 @@ export default function RsvpClient() {
                   {form.civil.selected && (
                     <div className="p-4 rounded-xl border" style={{ borderColor: BORDER }}>
                       <p className="font-medium mb-1" style={{ color: OR }}>{configFor('CIVIL').emoji} {configFor('CIVIL').name}</p>
-                      {form.civil.accompanistCount > 0 && (
-                        <p className="text-sm" style={{ color: IVOIRE_DIM }}>
-                          + {form.civil.accompanistCount} accompagnant{form.civil.accompanistCount > 1 ? 's' : ''}
-                        </p>
-                      )}
                       {form.civil.menuItemId && (
                         <p className="text-sm" style={{ color: IVOIRE_DIM }}>
                           Menu : {civilMenus.find((m) => m.id === form.civil.menuItemId)?.name}
@@ -902,11 +821,6 @@ export default function RsvpClient() {
                   {form.religieux.selected && (
                     <div className="p-4 rounded-xl border" style={{ borderColor: BORDER }}>
                       <p className="font-medium mb-1" style={{ color: OR }}>{configFor('RELIGIEUX').emoji} {configFor('RELIGIEUX').name}</p>
-                      {form.religieux.accompanistCount > 0 && (
-                        <p className="text-sm" style={{ color: IVOIRE_DIM }}>
-                          + {form.religieux.accompanistCount} accompagnant{form.religieux.accompanistCount > 1 ? 's' : ''}
-                        </p>
-                      )}
                       {form.religieux.menuItemId && (
                         <p className="text-sm" style={{ color: IVOIRE_DIM }}>
                           Menu : {religieuxMenus.find((m) => m.id === form.religieux.menuItemId)?.name}
@@ -918,11 +832,6 @@ export default function RsvpClient() {
                   {form.vinHonneur.selected && (
                     <div className="p-4 rounded-xl border" style={{ borderColor: BORDER }}>
                       <p className="font-medium mb-1" style={{ color: OR }}>{configFor('VIN_HONNEUR').emoji} {configFor('VIN_HONNEUR').name}</p>
-                      {form.vinHonneur.accompanistCount > 0 && (
-                        <p className="text-sm" style={{ color: IVOIRE_DIM }}>
-                          + {form.vinHonneur.accompanistCount} accompagnant{form.vinHonneur.accompanistCount > 1 ? 's' : ''}
-                        </p>
-                      )}
                       {form.vinHonneur.menuItemId && (
                         <p className="text-sm" style={{ color: IVOIRE_DIM }}>
                           Menu : {vinHonneurMenus.find((m) => m.id === form.vinHonneur.menuItemId)?.name}
@@ -933,11 +842,6 @@ export default function RsvpClient() {
                   {form.soiree.selected && (
                     <div className="p-4 rounded-xl border" style={{ borderColor: BORDER }}>
                       <p className="font-medium mb-1" style={{ color: OR }}>{configFor('SOIREE').emoji} {configFor('SOIREE').name}</p>
-                      {form.soiree.accompanistCount > 0 && (
-                        <p className="text-sm" style={{ color: IVOIRE_DIM }}>
-                          + {form.soiree.accompanistCount} accompagnant{form.soiree.accompanistCount > 1 ? 's' : ''}
-                        </p>
-                      )}
                       {form.soiree.menuId && (
                         <p className="text-sm" style={{ color: IVOIRE_DIM }}>
                           {soireeMenus.find((m) => m.id === form.soiree.menuId)?.name} —{' '}

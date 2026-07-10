@@ -39,7 +39,6 @@ async function loadGuestDetails(id: string) {
         ceremonyName: config?.name || inv.ceremony,
         ceremonyEmoji: config?.emoji || '💍',
         status: inv.status,
-        accompanistCount: inv.accompanistCount,
         notes: inv.notes,
         menu,
       }

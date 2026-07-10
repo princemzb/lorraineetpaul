@@ -7,8 +7,6 @@ type Invitation = {
   ceremony: string
   ceremonyName: string
   ceremonyEmoji: string
-  status: 'PENDING' | 'CONFIRMED' | 'DECLINED'
-  accompanistCount: number
   notes: string | null
   menu: string | null
 }
@@ -229,23 +227,9 @@ export default function CheckinPage() {
                 )}
                 {result.invitations.map((inv) => (
                   <div key={inv.ceremony} className="p-3 rounded-lg border" style={{ borderColor: '#f0e6d3' }}>
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium text-sm">
-                        {inv.ceremonyEmoji} {inv.ceremonyName}
-                      </span>
-                      <span
-                        className="text-xs px-2 py-0.5 rounded-full"
-                        style={{
-                          color: inv.status === 'CONFIRMED' ? '#16a34a' : inv.status === 'DECLINED' ? '#dc2626' : '#d97706',
-                          background: inv.status === 'CONFIRMED' ? '#f0fdf4' : inv.status === 'DECLINED' ? '#fef2f2' : '#fef9f0',
-                        }}
-                      >
-                        {inv.status === 'CONFIRMED' ? 'Confirmé' : inv.status === 'DECLINED' ? 'Décliné' : 'En attente'}
-                      </span>
-                    </div>
-                    {inv.accompanistCount > 0 && (
-                      <p className="text-xs text-gray-500 mt-1">+ {inv.accompanistCount} accompagnant{inv.accompanistCount > 1 ? 's' : ''}</p>
-                    )}
+                    <span className="font-medium text-sm">
+                      {inv.ceremonyEmoji} {inv.ceremonyName}
+                    </span>
                     {inv.menu && <p className="text-xs text-gray-500 mt-1">Menu : {inv.menu}</p>}
                     {inv.notes && (
                       <p className="text-xs mt-1" style={{ color: '#dc2626' }}>

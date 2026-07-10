@@ -13,13 +13,12 @@ const CEREMONY_HREFS: Record<string, string> = {
 }
 
 async function getStats() {
-  const [civilTotal, religieuxTotal, vinHonneurTotal, soireeTotal, totalGuests, accompanistSum] = await Promise.all([
+  const [civilTotal, religieuxTotal, vinHonneurTotal, soireeTotal, totalGuests] = await Promise.all([
     prisma.invitation.count({ where: { ceremony: 'CIVIL' } }),
     prisma.invitation.count({ where: { ceremony: 'RELIGIEUX' } }),
     prisma.invitation.count({ where: { ceremony: 'VIN_HONNEUR' } }),
     prisma.invitation.count({ where: { ceremony: 'SOIREE' } }),
     prisma.guest.count(),
-    prisma.invitation.aggregate({ _sum: { accompanistCount: true } }),
   ])
 
   return {
@@ -28,7 +27,6 @@ async function getStats() {
     vinHonneur: { total: vinHonneurTotal },
     soiree: { total: soireeTotal },
     totalGuests,
-    totalAccompanists: accompanistSum._sum.accompanistCount || 0,
   }
 }
 
@@ -62,10 +60,12 @@ function CeremonySection({
         </div>
         <Link
           href={href}
-          className="text-sm px-4 py-2 rounded-lg text-white transition-all"
-          style={{ background: '#8b7355' }}
+          title="Gérer les invités"
+          aria-label="Gérer les invités"
+          className="w-10 h-10 rounded-full flex items-center justify-center text-lg transition-transform hover:scale-110"
+          style={{ background: '#fdf3e3' }}
         >
-          Gérer →
+          ⚙️
         </Link>
       </div>
 
@@ -100,14 +100,13 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Global stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <StatCard label="Total invités (personnes)" value={stats.totalGuests} color="#8b7355" />
         <StatCard
           label="Total invitations (toutes cérémonies)"
           value={stats.civil.total + stats.religieux.total + stats.vinHonneur.total + stats.soiree.total}
           color="#16a34a"
         />
-        <StatCard label="Accompagnants" value={stats.totalAccompanists} color="#8b7355" />
       </div>
 
       {/* Per ceremony */}

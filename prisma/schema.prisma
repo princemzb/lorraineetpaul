@@ -17,7 +17,6 @@ enum Ceremony {
 enum RSVPStatus {
   PENDING
   CONFIRMED
-  DECLINED
 }
 
 enum CourseType {
@@ -145,7 +144,6 @@ model Invitation {
   platOption        MenuOption? @relation("PlatChoice", fields: [platOptionId], references: [id])
   dessertOptionId   String?
   dessertOption     MenuOption? @relation("DessertChoice", fields: [dessertOptionId], references: [id])
-  accompanistCount  Int        @default(0)
   notes             String?
   respondedAt       DateTime?
   emailSent         Boolean    @default(false)

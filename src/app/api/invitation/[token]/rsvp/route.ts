@@ -5,11 +5,7 @@ import { sendConfirmationEmail } from '@/lib/email'
 export async function POST(req: Request, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params
   const body = await req.json()
-  const { status, menuItemId, menuId, entreeOptionId, platOptionId, dessertOptionId, notes } = body
-
-  if (!['CONFIRMED', 'DECLINED'].includes(status)) {
-    return NextResponse.json({ error: 'Statut invalide' }, { status: 400 })
-  }
+  const { menuItemId, menuId, entreeOptionId, platOptionId, dessertOptionId, notes } = body
 
   const invitation = await prisma.invitation.findUnique({
     where: { token },
@@ -21,23 +17,22 @@ export async function POST(req: Request, { params }: { params: Promise<{ token: 
   }
 
   const isSoiree = invitation.ceremony === 'SOIREE'
-  const confirmed = status === 'CONFIRMED'
 
   const updated = await prisma.invitation.update({
     where: { token },
     data: isSoiree
       ? {
-          status,
-          menuId: confirmed ? menuId || null : null,
-          entreeOptionId: confirmed ? entreeOptionId || null : null,
-          platOptionId: confirmed ? platOptionId || null : null,
-          dessertOptionId: confirmed ? dessertOptionId || null : null,
+          status: 'CONFIRMED',
+          menuId: menuId || null,
+          entreeOptionId: entreeOptionId || null,
+          platOptionId: platOptionId || null,
+          dessertOptionId: dessertOptionId || null,
           notes: notes || null,
           respondedAt: new Date(),
         }
       : {
-          status,
-          menuItemId: confirmed ? menuItemId || null : null,
+          status: 'CONFIRMED',
+          menuItemId: menuItemId || null,
           notes: notes || null,
           respondedAt: new Date(),
         },
@@ -63,7 +58,6 @@ export async function POST(req: Request, { params }: { params: Promise<{ token: 
         to: invitation.guest.email,
         guestName: `${invitation.guest.firstName} ${invitation.guest.lastName}`,
         ceremony: invitation.ceremony,
-        status,
         menuName,
         invitationUrl: `${appUrl}/invitation/${token}`,
       })

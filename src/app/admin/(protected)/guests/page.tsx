@@ -13,11 +13,9 @@ type Guest = {
   invitations: Array<{
     id: string
     ceremony: 'CIVIL' | 'SOIREE'
-    status: 'PENDING' | 'CONFIRMED' | 'DECLINED'
   }>
 }
 
-const STATUS_LABELS: Record<string, string> = { PENDING: 'En attente', CONFIRMED: 'Confirmé', DECLINED: 'Décliné' }
 const CEREMONY_LABELS: Record<string, string> = { CIVIL: 'Civil', SOIREE: 'Soirée' }
 
 export default function GuestsPage() {
@@ -149,7 +147,7 @@ export default function GuestsPage() {
                       ) : (
                         g.invitations.map(inv => (
                           <span key={inv.id} className="px-2 py-0.5 rounded-full text-xs border" style={{ borderColor: '#e8d5b7', color: '#8b7355' }}>
-                            {CEREMONY_LABELS[inv.ceremony]} · {STATUS_LABELS[inv.status]}
+                            {CEREMONY_LABELS[inv.ceremony]}
                           </span>
                         ))
                       )}

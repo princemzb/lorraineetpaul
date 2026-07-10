@@ -32,7 +32,7 @@ export async function POST(req: Request) {
   const createdInvitations = []
 
   for (const c of ceremonies) {
-    const { ceremony, menuItemId, menuId, entreeOptionId, platOptionId, dessertOptionId, accompanistCount } = c
+    const { ceremony, menuItemId, menuId, entreeOptionId, platOptionId, dessertOptionId } = c
     const isSoiree = ceremony === 'SOIREE'
 
     const existing = await prisma.invitation.findFirst({
@@ -55,7 +55,6 @@ export async function POST(req: Request) {
         data: {
           status: 'CONFIRMED',
           ...data,
-          accompanistCount: accompanistCount || 0,
           notes: notes || null,
           respondedAt: new Date(),
         },
@@ -68,7 +67,6 @@ export async function POST(req: Request) {
           ceremony,
           status: 'CONFIRMED',
           ...data,
-          accompanistCount: accompanistCount || 0,
           notes: notes || null,
           respondedAt: new Date(),
         },
@@ -93,7 +91,6 @@ export async function POST(req: Request) {
           inv.ceremony === 'SOIREE'
             ? formatComposedMenu(inv.menu?.name, inv.entreeOption?.name, inv.platOption?.name, inv.dessertOption?.name)
             : inv.menuItem?.name,
-        accompanistCount: inv.accompanistCount,
       })),
       notes,
       appUrl,
@@ -119,7 +116,7 @@ async function sendRsvpConfirmationEmail({
 }: {
   to: string
   guestName: string
-  ceremonies: Array<{ label: string; menuName?: string; accompanistCount: number }>
+  ceremonies: Array<{ label: string; menuName?: string }>
   dateRangeLabel: string
   notes?: string
   appUrl: string
@@ -134,11 +131,10 @@ async function sendRsvpConfirmationEmail({
 
   const ceremonyRows = ceremonies
     .map((c) => {
-      const accomp = c.accompanistCount > 0 ? ` + ${c.accompanistCount} accompagnant${c.accompanistCount > 1 ? 's' : ''}` : ''
       return `
         <tr>
           <td style="padding:10px 0;border-bottom:1px solid #f0e6d3;">
-            <strong style="color:#8b7355">${c.label}</strong>${accomp}<br/>
+            <strong style="color:#8b7355">${c.label}</strong><br/>
             ${c.menuName ? `<span style="color:#9a8a7a;font-size:14px">Menu : ${c.menuName}</span>` : ''}
           </td>
         </tr>`
