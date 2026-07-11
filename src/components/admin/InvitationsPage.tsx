@@ -57,8 +57,8 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
   const [ceremonyLabel, setCeremonyLabel] = useState<string>(ceremony)
   const [ceremonyEmoji, setCeremonyEmoji] = useState('💒')
   const [createdGuest, setCreatedGuest] = useState<{ id: string; firstName: string; lastName: string } | null>(null)
-  const [sortBy, setSortBy] = useState<'name' | 'menu' | 'respondedAt' | null>(null)
-  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
+  const [sortBy, setSortBy] = useState<'name' | 'menu' | 'respondedAt'>('respondedAt')
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
 
   const isSoiree = ceremony === 'SOIREE'
 
@@ -194,7 +194,6 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
   }
 
   const sortedInvitations = [...invitations].sort((a, b) => {
-    if (!sortBy) return 0
     let cmp = 0
     if (sortBy === 'name') {
       cmp = `${a.guest.lastName} ${a.guest.firstName}`.localeCompare(`${b.guest.lastName} ${b.guest.firstName}`)
@@ -208,14 +207,29 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
     return sortDir === 'asc' ? cmp : -cmp
   })
 
-  const SortHeader = ({ col, label }: { col: 'name' | 'menu' | 'respondedAt'; label: string }) => (
-    <th
-      className="text-left px-4 py-3 font-medium text-gray-600 cursor-pointer select-none hover:text-gray-800"
-      onClick={() => toggleSort(col)}
-    >
-      {label} {sortBy === col && (sortDir === 'asc' ? '▲' : '▼')}
-    </th>
-  )
+  const SortHeader = ({ col, label }: { col: 'name' | 'menu' | 'respondedAt'; label: string }) => {
+    const active = sortBy === col
+    return (
+      <th
+        className="text-left px-4 py-3 font-medium text-gray-600 cursor-pointer select-none hover:text-gray-800"
+        onClick={() => toggleSort(col)}
+      >
+        <span className="inline-flex items-center gap-1.5">
+          {label}
+          <span
+            className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] transition-all duration-300"
+            style={
+              active
+                ? { color: '#8b7355', background: '#fdf3e3', boxShadow: '0 0 0 1px #e8d5b7, 0 0 8px 1px rgba(139,115,85,0.55)' }
+                : { color: '#c9bda9' }
+            }
+          >
+            {active ? (sortDir === 'asc' ? '▲' : '▼') : '⇅'}
+          </span>
+        </span>
+      </th>
+    )
+  }
 
   if (loading) return <div className="p-8 text-gray-500">Chargement...</div>
 
