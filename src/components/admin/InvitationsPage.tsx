@@ -57,6 +57,8 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
   const [ceremonyLabel, setCeremonyLabel] = useState<string>(ceremony)
   const [ceremonyEmoji, setCeremonyEmoji] = useState('💒')
   const [createdGuest, setCreatedGuest] = useState<{ id: string; firstName: string; lastName: string } | null>(null)
+  const [sortBy, setSortBy] = useState<'name' | 'menu' | 'respondedAt' | null>(null)
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
 
   const isSoiree = ceremony === 'SOIREE'
 
@@ -181,6 +183,39 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
       setSubmitting(false)
     }
   }
+
+  const toggleSort = (col: 'name' | 'menu' | 'respondedAt') => {
+    if (sortBy === col) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+    } else {
+      setSortBy(col)
+      setSortDir('asc')
+    }
+  }
+
+  const sortedInvitations = [...invitations].sort((a, b) => {
+    if (!sortBy) return 0
+    let cmp = 0
+    if (sortBy === 'name') {
+      cmp = `${a.guest.lastName} ${a.guest.firstName}`.localeCompare(`${b.guest.lastName} ${b.guest.firstName}`)
+    } else if (sortBy === 'menu') {
+      cmp = menuLabel(a).localeCompare(menuLabel(b))
+    } else if (sortBy === 'respondedAt') {
+      const aTime = a.respondedAt ? new Date(a.respondedAt).getTime() : 0
+      const bTime = b.respondedAt ? new Date(b.respondedAt).getTime() : 0
+      cmp = aTime - bTime
+    }
+    return sortDir === 'asc' ? cmp : -cmp
+  })
+
+  const SortHeader = ({ col, label }: { col: 'name' | 'menu' | 'respondedAt'; label: string }) => (
+    <th
+      className="text-left px-4 py-3 font-medium text-gray-600 cursor-pointer select-none hover:text-gray-800"
+      onClick={() => toggleSort(col)}
+    >
+      {label} {sortBy === col && (sortDir === 'asc' ? '▲' : '▼')}
+    </th>
+  )
 
   if (loading) return <div className="p-8 text-gray-500">Chargement...</div>
 
@@ -382,18 +417,18 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
           <table className="w-full text-sm">
             <thead>
               <tr style={{ background: '#fdf3e3', borderBottom: '2px solid #f0e6d3' }}>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Invité</th>
+                <SortHeader col="name" label="Invité" />
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Contact</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Menu</th>
+                <SortHeader col="menu" label="Menu" />
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Notes</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Répondu le</th>
+                <SortHeader col="respondedAt" label="Répondu le" />
                 <th className="text-right px-4 py-3 font-medium text-gray-600">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {invitations.map((inv, i) => {
+              {sortedInvitations.map((inv, i) => {
                 return (
-                  <tr key={inv.id} style={{ borderBottom: i < invitations.length - 1 ? '1px solid #f0e6d3' : 'none' }}>
+                  <tr key={inv.id} style={{ borderBottom: i < sortedInvitations.length - 1 ? '1px solid #f0e6d3' : 'none' }}>
                     <td className="px-4 py-3">
                       <div className="font-medium text-gray-800">
                         {inv.guest.lastName} {inv.guest.firstName}
