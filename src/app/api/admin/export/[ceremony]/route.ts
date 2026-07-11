@@ -108,6 +108,27 @@ export async function GET(req: Request, { params }: { params: Promise<{ ceremony
     }
   }
 
+  // Récapitulatif : total invités + décompte des menus
+  const totalGuests = rows.length
+  const paulCount = rows.filter((r) => r.menu.toLowerCase().includes('paul')).length
+  const lorraineCount = rows.filter((r) => r.menu.toLowerCase().includes('lorraine')).length
+
+  sheet.addRow({})
+
+  const totalRow = sheet.addRow({ nom: 'Total invités', prenom: totalGuests })
+  totalRow.getCell('nom').font = { bold: true }
+  totalRow.getCell('prenom').font = { bold: true }
+
+  const lorraineRow = sheet.addRow({ nom: 'Menus Lorraine', prenom: lorraineCount })
+  lorraineRow.getCell('nom').font = { bold: true }
+  lorraineRow.getCell('nom').fill = LORRAINE_FILL
+  lorraineRow.getCell('prenom').font = { bold: true }
+
+  const paulRow = sheet.addRow({ nom: 'Menus Paul', prenom: paulCount })
+  paulRow.getCell('nom').font = { bold: true }
+  paulRow.getCell('nom').fill = PAUL_FILL
+  paulRow.getCell('prenom').font = { bold: true }
+
   const buffer = await workbook.xlsx.writeBuffer()
   const filename = `invitations-${ceremonyUpper.toLowerCase()}-${new Date().toISOString().split('T')[0]}.xlsx`
 
