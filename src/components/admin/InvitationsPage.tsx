@@ -244,11 +244,11 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
         </div>
         <div className="flex gap-3">
           <a
-            href={`/api/admin/export/${ceremony.toLowerCase()}`}
+            href={`/api/admin/export/${ceremony.toLowerCase()}?sort=${sortBy}&dir=${sortDir}`}
             className="px-4 py-2 rounded-lg border text-sm font-medium transition-all"
             style={{ borderColor: '#8b7355', color: '#8b7355' }}
           >
-            📥 Exporter CSV
+            📥 Exporter Excel
           </a>
           <button
             onClick={() => { setCreatedGuest(null); setShowAddForm(true) }}
