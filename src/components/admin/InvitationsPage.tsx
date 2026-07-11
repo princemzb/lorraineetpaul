@@ -211,20 +211,20 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
     const active = sortBy === col
     return (
       <th
-        className="text-left px-4 py-3 font-medium text-gray-600 cursor-pointer select-none hover:text-gray-800"
+        className="text-left px-4 py-3 font-medium text-gray-600 cursor-pointer select-none hover:text-gray-800 whitespace-nowrap"
         onClick={() => toggleSort(col)}
       >
-        <span className="inline-flex items-center gap-1.5">
+        <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
           {label}
           <span
-            className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] transition-all duration-300"
+            className="inline-flex items-center justify-center w-5 h-5 rounded-full text-xs transition-all duration-300 flex-shrink-0"
             style={
               active
                 ? { color: '#8b7355', background: '#fdf3e3', boxShadow: '0 0 0 1px #e8d5b7, 0 0 8px 1px rgba(139,115,85,0.55)' }
                 : { color: '#c9bda9' }
             }
           >
-            {active ? (sortDir === 'asc' ? '▲' : '▼') : '⇅'}
+            {active ? (sortDir === 'asc' ? '▲' : '▼') : '△'}
           </span>
         </span>
       </th>
@@ -432,11 +432,11 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
             <thead>
               <tr style={{ background: '#fdf3e3', borderBottom: '2px solid #f0e6d3' }}>
                 <SortHeader col="name" label="Invité" />
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Contact</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Contact</th>
                 <SortHeader col="menu" label="Menu" />
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Notes</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Notes</th>
                 <SortHeader col="respondedAt" label="Répondu le" />
-                <th className="text-right px-4 py-3 font-medium text-gray-600">Actions</th>
+                <th className="text-right px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody>
