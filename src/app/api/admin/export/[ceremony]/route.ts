@@ -159,12 +159,14 @@ export async function GET(req: Request, { params }: { params: Promise<{ ceremony
       }
       if (counts.size === 0) continue
 
-      const header = sheet.addRow({ nom: group.label })
+      const header = sheet.addRow({ nom: group.label, prenom: 'Nombre' })
       header.getCell('nom').font = { bold: true }
       header.getCell('nom').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFDF3E3' } }
+      header.getCell('prenom').font = { bold: true }
+      header.getCell('prenom').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFDF3E3' } }
 
       for (const [name, count] of [...counts.entries()].sort((a, b) => b[1] - a[1])) {
-        sheet.addRow({ prenom: name, email: count })
+        sheet.addRow({ nom: name, prenom: count })
       }
     }
   }
