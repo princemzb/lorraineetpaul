@@ -7,7 +7,6 @@ export async function GET(req: Request, { params }: { params: Promise<{ token: s
     where: { token },
     include: {
       guest: true,
-      menuItem: true,
       menu: true,
       entreeOption: true,
       platOption: true,
@@ -28,10 +27,5 @@ export async function GET(req: Request, { params }: { params: Promise<{ token: s
     return NextResponse.json({ invitation, menus })
   }
 
-  const menuItems = await prisma.menuItem.findMany({
-    where: { ceremony: invitation.ceremony },
-    orderBy: { order: 'asc' },
-  })
-
-  return NextResponse.json({ invitation, menuItems })
+  return NextResponse.json({ invitation })
 }

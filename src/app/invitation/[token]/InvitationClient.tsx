@@ -9,12 +9,6 @@ import { GoldButton } from '@/components/public/Buttons'
 import GuestQRCode from '@/components/public/GuestQRCode'
 import { formatCeremonyDate } from '@/lib/format'
 
-type MenuItem = {
-  id: string
-  name: string
-  description?: string
-}
-
 type CourseType = 'ENTREE' | 'PLAT' | 'DESSERT'
 type MenuOption = { id: string; course: CourseType; name: string; description?: string }
 type ComposableMenu = { id: string; name: string; options: MenuOption[] }
@@ -33,14 +27,12 @@ type Invitation = {
   token: string
   ceremony: 'CIVIL' | 'RELIGIEUX' | 'VIN_HONNEUR' | 'SOIREE'
   status: 'PENDING' | 'CONFIRMED'
-  menuItemId?: string
   menuId?: string
   entreeOptionId?: string
   platOptionId?: string
   dessertOptionId?: string
   notes?: string
   guest: Guest
-  menuItem?: MenuItem
 }
 
 type CeremonyConfig = {
@@ -56,14 +48,12 @@ export default function InvitationClient() {
   const { token } = useParams<{ token: string }>()
   const [invitation, setInvitation] = useState<Invitation | null>(null)
   const [ceremonyConfig, setCeremonyConfig] = useState<CeremonyConfig | null>(null)
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([])
   const [composableMenus, setComposableMenus] = useState<ComposableMenu[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
 
-  const [selectedMenu, setSelectedMenu] = useState('')
   const [selectedMenuId, setSelectedMenuId] = useState('')
   const [selectedEntreeId, setSelectedEntreeId] = useState('')
   const [selectedPlatId, setSelectedPlatId] = useState('')
@@ -80,7 +70,6 @@ export default function InvitationClient() {
           setError(data.error)
         } else {
           setInvitation(data.invitation)
-          setMenuItems(data.menuItems || [])
           setComposableMenus(data.menus || [])
           fetch('/api/ceremonies')
             .then((r) => r.json())
@@ -88,7 +77,6 @@ export default function InvitationClient() {
               setCeremonyConfig(configs.find((c) => c.ceremony === data.invitation.ceremony) || null)
             })
           if (data.invitation.status === 'CONFIRMED') {
-            setSelectedMenu(data.invitation.menuItemId || '')
             setSelectedMenuId(data.invitation.menuId || '')
             setSelectedEntreeId(data.invitation.entreeOptionId || '')
             setSelectedPlatId(data.invitation.platOptionId || '')
@@ -132,9 +120,6 @@ export default function InvitationClient() {
         alert('Veuillez choisir un dessert')
         return
       }
-    } else if (!isSoiree && menuItems.length > 0 && !selectedMenu) {
-      alert('Veuillez choisir un menu')
-      return
     }
 
     setSubmitting(true)
@@ -143,7 +128,6 @@ export default function InvitationClient() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         status: 'CONFIRMED',
-        menuItemId: !isSoiree ? selectedMenu || null : null,
         menuId: isSoiree ? selectedMenuId || null : null,
         entreeOptionId: isSoiree ? selectedEntreeId || null : null,
         platOptionId: isSoiree ? selectedPlatId || null : null,
@@ -305,54 +289,6 @@ export default function InvitationClient() {
                     style={{ background: 'rgba(124,179,66,0.1)', color: 'var(--pomme-light)' }}
                   >
                     Vous avez déjà répondu à cette invitation. Vous pouvez modifier votre réponse.
-                  </div>
-                )}
-
-                {/* Menu Choice — cérémonies à menu simple */}
-                {!isSoiree && menuItems.length > 0 && (
-                  <div className="mb-8">
-                    <h3 className="text-lg font-medium mb-4" style={{ color: 'var(--or-light)' }}>
-                      Choisissez votre menu
-                    </h3>
-                    <div className="space-y-3">
-                      {menuItems.map((item) => (
-                        <motion.button
-                          key={item.id}
-                          whileHover={{ scale: 1.01 }}
-                          whileTap={{ scale: 0.99 }}
-                          onClick={() => setSelectedMenu(item.id)}
-                          className="w-full text-left py-4 px-5 rounded-xl border transition-colors"
-                          style={{
-                            borderColor: selectedMenu === item.id ? 'var(--or)' : 'var(--noir-border)',
-                            background: selectedMenu === item.id ? 'rgba(212,175,55,0.08)' : 'transparent',
-                          }}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div
-                              className="w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0"
-                              style={{
-                                borderColor: selectedMenu === item.id ? 'var(--or)' : 'var(--noir-border)',
-                                background: selectedMenu === item.id ? 'var(--or)' : 'transparent',
-                              }}
-                            >
-                              {selectedMenu === item.id && (
-                                <div className="w-2 h-2 rounded-full" style={{ background: 'var(--noir)' }} />
-                              )}
-                            </div>
-                            <div>
-                              <div className="font-medium" style={{ color: 'var(--ivoire)' }}>
-                                {item.name}
-                              </div>
-                              {item.description && (
-                                <div className="text-sm" style={{ color: 'var(--ivoire-dim)' }}>
-                                  {item.description}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </motion.button>
-                      ))}
-                    </div>
                   </div>
                 )}
 

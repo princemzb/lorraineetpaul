@@ -2,14 +2,6 @@
 
 import { useEffect, useState, useCallback } from 'react'
 
-type MenuItem = {
-  id: string
-  name: string
-  description?: string
-  ceremony: 'CIVIL' | 'SOIREE'
-  order: number
-}
-
 type CourseType = 'ENTREE' | 'PLAT' | 'DESSERT'
 type MenuOption = { id: string; menuId: string; course: CourseType; name: string; description?: string; order: number }
 type ComposableMenu = { id: string; name: string; options: MenuOption[] }
@@ -198,125 +190,15 @@ function SoireeMenuManager() {
 }
 
 export default function MenusPage() {
-  const [menus, setMenus] = useState<MenuItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [showForm, setShowForm] = useState(false)
-  const [editItem, setEditItem] = useState<MenuItem | null>(null)
-  const [form, setForm] = useState({ name: '', description: '', ceremony: 'CIVIL' as 'CIVIL' | 'SOIREE', order: 0 })
-  const [submitting, setSubmitting] = useState(false)
-
-  const load = useCallback(async () => {
-    const res = await fetch('/api/admin/menus')
-    const data = await res.json()
-    setMenus(Array.isArray(data) ? data : [])
-    setLoading(false)
-  }, [])
-
-  useEffect(() => { load() }, [load])
-
-  const openAdd = () => {
-    setEditItem(null)
-    setForm({ name: '', description: '', ceremony: 'CIVIL', order: 0 })
-    setShowForm(true)
-  }
-
-  const openEdit = (item: MenuItem) => {
-    setEditItem(item)
-    setForm({ name: item.name, description: item.description || '', ceremony: item.ceremony, order: item.order })
-    setShowForm(true)
-  }
-
-  const handleSubmit = async () => {
-    if (!form.name) { alert('Nom requis'); return }
-    setSubmitting(true)
-    const url = editItem ? `/api/admin/menus/${editItem.id}` : '/api/admin/menus'
-    const method = editItem ? 'PUT' : 'POST'
-    const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
-    if (res.ok) { setShowForm(false); await load() }
-    else { const d = await res.json(); alert(d.error) }
-    setSubmitting(false)
-  }
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Supprimer ce menu ?')) return
-    await fetch(`/api/admin/menus/${id}`, { method: 'DELETE' })
-    await load()
-  }
-
-  const civilMenus = menus.filter(m => m.ceremony === 'CIVIL').sort((a, b) => a.order - b.order)
-
-  if (loading) return <div className="p-8 text-gray-500">Chargement...</div>
-
-  const MenuList = ({ items, label, icon }: { items: MenuItem[]; label: string; icon: string }) => (
-    <div className="bg-white rounded-2xl shadow-sm border overflow-hidden" style={{ borderColor: '#f0e6d3' }}>
-      <div className="px-6 py-4 flex items-center gap-2" style={{ borderBottom: '1px solid #f0e6d3', background: '#fdf3e3' }}>
-        <span>{icon}</span>
-        <h3 className="font-medium" style={{ color: '#8b7355' }}>{label}</h3>
-        <span className="ml-auto text-sm text-gray-400">{items.length} option{items.length > 1 ? 's' : ''}</span>
-      </div>
-      {items.length === 0 ? (
-        <div className="p-8 text-center text-gray-400 text-sm">Aucun menu défini</div>
-      ) : (
-        <div className="divide-y" style={{ borderColor: '#f0e6d3' }}>
-          {items.map(item => (
-            <div key={item.id} className="px-6 py-4 flex items-center justify-between">
-              <div>
-                <div className="font-medium text-gray-800">{item.name}</div>
-                {item.description && <div className="text-sm text-gray-500 mt-0.5">{item.description}</div>}
-                <div className="text-xs text-gray-400 mt-1">Ordre : {item.order}</div>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={() => openEdit(item)} className="px-2 py-1 rounded text-xs border" style={{ borderColor: '#e8d5b7', color: '#8b7355' }}>
-                  ✏️
-                </button>
-                <button onClick={() => handleDelete(item.id)} className="px-2 py-1 rounded text-xs border" style={{ borderColor: '#fecaca', color: '#dc2626' }}>
-                  🗑️
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-
   return (
     <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-medium" style={{ color: '#8b7355', fontFamily: 'Georgia, serif' }}>
-            🍽️ Gestion des menus
-          </h1>
-          <p className="text-gray-500 text-sm mt-1">Définissez les options de menu pour chaque cérémonie</p>
-        </div>
-        <button onClick={openAdd} className="px-4 py-2 rounded-lg text-white text-sm" style={{ background: '#8b7355' }}>
-          + Ajouter un menu
-        </button>
-      </div>
-
-      {showForm && (
-        <div className="bg-white rounded-2xl border shadow-sm p-6 mb-6" style={{ borderColor: '#f0e6d3' }}>
-          <h3 className="font-medium mb-4" style={{ color: '#8b7355' }}>
-            {editItem ? 'Modifier le menu' : 'Nouveau menu'}
-          </h3>
-          <div className="grid grid-cols-2 gap-4">
-            <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Nom *" className="border rounded-lg px-3 py-2 text-sm col-span-2 focus:outline-none" style={{ borderColor: '#e8d5b7' }} />
-            <input value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="Description" className="border rounded-lg px-3 py-2 text-sm col-span-2 focus:outline-none" style={{ borderColor: '#e8d5b7' }} />
-            <input type="number" value={form.order} onChange={e => setForm(f => ({ ...f, order: parseInt(e.target.value) || 0 }))} placeholder="Ordre" className="border rounded-lg px-3 py-2 text-sm focus:outline-none" style={{ borderColor: '#e8d5b7' }} />
-          </div>
-          <div className="flex gap-3 mt-4">
-            <button onClick={handleSubmit} disabled={submitting} className="px-4 py-2 rounded-lg text-white text-sm" style={{ background: '#8b7355' }}>
-              {submitting ? 'Enregistrement...' : 'Enregistrer'}
-            </button>
-            <button onClick={() => setShowForm(false)} className="px-4 py-2 rounded-lg text-sm border" style={{ borderColor: '#e8d5b7', color: '#8b7355' }}>
-              Annuler
-            </button>
-          </div>
-        </div>
-      )}
-
-      <div className="mb-10">
-        <MenuList items={civilMenus} label="Mariage Civil" icon="⚖️" />
+      <div className="mb-6">
+        <h1 className="text-2xl font-medium" style={{ color: '#8b7355', fontFamily: 'Georgia, serif' }}>
+          🍽️ Gestion des menus
+        </h1>
+        <p className="text-gray-500 text-sm mt-1">
+          Seule la Soirée de Mariage propose un choix de menu à ses invités.
+        </p>
       </div>
 
       <div>

@@ -8,7 +8,7 @@ async function loadGuestDetails(id: string) {
     where: { id },
     include: {
       invitations: {
-        include: { menuItem: true, menu: true, entreeOption: true, platOption: true, dessertOption: true },
+        include: { menu: true, entreeOption: true, platOption: true, dessertOption: true },
       },
     },
   })
@@ -33,7 +33,7 @@ async function loadGuestDetails(id: string) {
           ? inv.menu
             ? `${inv.menu.name} — ${[inv.entreeOption?.name, inv.platOption?.name, inv.dessertOption?.name].filter(Boolean).join(' / ')}`
             : null
-          : inv.menuItem?.name || null
+          : null
       return {
         ceremony: inv.ceremony,
         ceremonyName: config?.name || inv.ceremony,

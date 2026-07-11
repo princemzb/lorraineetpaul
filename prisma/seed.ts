@@ -24,38 +24,9 @@ async function main() {
     console.log(`Admin user created: ${adminEmail} / ${process.env.ADMIN_PASSWORD ? '(mot de passe défini via ADMIN_PASSWORD)' : adminPassword}`)
   }
 
-  // Create menu items for civil
-  const civilMenus = [
-    { name: 'Menu adulte', description: 'Entrée, plat, dessert', ceremony: Ceremony.CIVIL, order: 1 },
-    { name: 'Menu enfant', description: 'Adapté pour les enfants', ceremony: Ceremony.CIVIL, order: 2 },
-    { name: 'Menu végétarien', description: 'Sans viande ni poisson', ceremony: Ceremony.CIVIL, order: 3 },
-  ]
-
-  // Create menu items for religieux
-  const religieuxMenus = [
-    { name: 'Menu adulte', description: 'Entrée, plat, dessert', ceremony: Ceremony.RELIGIEUX, order: 1 },
-    { name: 'Menu enfant', description: 'Adapté pour les enfants', ceremony: Ceremony.RELIGIEUX, order: 2 },
-    { name: 'Menu végétarien', description: 'Sans viande ni poisson', ceremony: Ceremony.RELIGIEUX, order: 3 },
-  ]
-
-  for (const menu of [...civilMenus, ...religieuxMenus]) {
-    const exists = await prisma.menuItem.findFirst({
-      where: { name: menu.name, ceremony: menu.ceremony },
-    })
-    if (!exists) {
-      await prisma.menuItem.create({ data: menu })
-    }
-  }
-  console.log('Menu items seeded')
-
-  // Soirée : menus composables (Menu Paul / Menu Lorraine), un choix
-  // d'entrée + plat + dessert au sein du menu sélectionné.
-  await prisma.invitation.updateMany({
-    where: { ceremony: Ceremony.SOIREE },
-    data: { menuItemId: null },
-  })
-  await prisma.menuItem.deleteMany({ where: { ceremony: Ceremony.SOIREE } })
-
+  // Seule la Soirée propose un choix de menu : menus composables
+  // (Menu Paul / Menu Lorraine), un choix d'entrée + plat + dessert
+  // au sein du menu sélectionné.
   const composableMenus = [
     {
       name: 'Menu Paul',

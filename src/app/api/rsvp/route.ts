@@ -32,7 +32,7 @@ export async function POST(req: Request) {
   const createdInvitations = []
 
   for (const c of ceremonies) {
-    const { ceremony, menuItemId, menuId, entreeOptionId, platOptionId, dessertOptionId } = c
+    const { ceremony, menuId, entreeOptionId, platOptionId, dessertOptionId } = c
     const isSoiree = ceremony === 'SOIREE'
 
     const existing = await prisma.invitation.findFirst({
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
           platOptionId: platOptionId || null,
           dessertOptionId: dessertOptionId || null,
         }
-      : { menuItemId: menuItemId || null }
+      : {}
 
     let invitation
     if (existing) {
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
           notes: notes || null,
           respondedAt: new Date(),
         },
-        include: { menuItem: true, menu: true, entreeOption: true, platOption: true, dessertOption: true },
+        include: { menu: true, entreeOption: true, platOption: true, dessertOption: true },
       })
     } else {
       invitation = await prisma.invitation.create({
@@ -70,7 +70,7 @@ export async function POST(req: Request) {
           notes: notes || null,
           respondedAt: new Date(),
         },
-        include: { menuItem: true, menu: true, entreeOption: true, platOption: true, dessertOption: true },
+        include: { menu: true, entreeOption: true, platOption: true, dessertOption: true },
       })
     }
     createdInvitations.push(invitation)
@@ -90,7 +90,7 @@ export async function POST(req: Request) {
         menuName:
           inv.ceremony === 'SOIREE'
             ? formatComposedMenu(inv.menu?.name, inv.entreeOption?.name, inv.platOption?.name, inv.dessertOption?.name)
-            : inv.menuItem?.name,
+            : undefined,
       })),
       notes,
       appUrl,

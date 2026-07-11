@@ -28,7 +28,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ ceremony
 
   const invitations = await prisma.invitation.findMany({
     where: { ceremony: ceremonyUpper },
-    include: { guest: true, menuItem: true, menu: true, entreeOption: true, platOption: true, dessertOption: true },
+    include: { guest: true, menu: true, entreeOption: true, platOption: true, dessertOption: true },
   })
 
   const rows = invitations.map((inv) => {
@@ -41,7 +41,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ ceremony
                 : ''
             }`
           : ''
-        : inv.menuItem?.name || ''
+        : ''
 
     return {
       nom: inv.guest.lastName,
@@ -50,7 +50,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ ceremony
       telephone: inv.guest.phone || '',
       ceremonie: ceremonyConfig?.name || ceremonyUpper,
       menu,
-      menuName: inv.menu?.name || inv.menuItem?.name || '',
+      menuName: inv.menu?.name || '',
       entree: inv.entreeOption?.name || '',
       plat: inv.platOption?.name || '',
       dessert: inv.dessertOption?.name || '',

@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import GuestQRCode from '@/components/public/GuestQRCode'
 
 type Guest = { id: string; firstName: string; lastName: string; email?: string; phone?: string }
-type MenuItem = { id: string; name: string; description?: string }
+type NamedRef = { id: string; name: string; description?: string }
 type CourseType = 'ENTREE' | 'PLAT' | 'DESSERT'
 type MenuOption = { id: string; course: CourseType; name: string; description?: string }
 type ComposableMenu = { id: string; name: string; options: MenuOption[] }
@@ -16,28 +16,23 @@ type Invitation = {
   notes?: string
   respondedAt?: string
   guest: Guest
-  menuItem?: MenuItem
-  menu?: MenuItem
-  entreeOption?: MenuItem
-  platOption?: MenuItem
-  dessertOption?: MenuItem
+  menu?: NamedRef
+  entreeOption?: NamedRef
+  platOption?: NamedRef
+  dessertOption?: NamedRef
 }
 
 const COURSE_LABELS: Record<CourseType, string> = { ENTREE: 'Entrée', PLAT: 'Plat', DESSERT: 'Dessert' }
 
 function menuLabel(inv: Invitation): string {
-  if (inv.ceremony === 'SOIREE') {
-    if (!inv.menu) return '—'
-    const courses = [inv.entreeOption?.name, inv.platOption?.name, inv.dessertOption?.name].filter(Boolean).join(' / ')
-    return courses ? `${inv.menu.name} — ${courses}` : inv.menu.name
-  }
-  return inv.menuItem?.name || '—'
+  if (inv.ceremony !== 'SOIREE' || !inv.menu) return '—'
+  const courses = [inv.entreeOption?.name, inv.platOption?.name, inv.dessertOption?.name].filter(Boolean).join(' / ')
+  return courses ? `${inv.menu.name} — ${courses}` : inv.menu.name
 }
 
 export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'RELIGIEUX' | 'VIN_HONNEUR' | 'SOIREE' }) {
   const [invitations, setInvitations] = useState<Invitation[]>([])
   const [guests, setGuests] = useState<Guest[]>([])
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([])
   const [composableMenus, setComposableMenus] = useState<ComposableMenu[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddForm, setShowAddForm] = useState(false)
@@ -47,7 +42,6 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
   const [newEmail, setNewEmail] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [addMode, setAddMode] = useState<'existing' | 'new'>('new')
-  const [selectedMenuItemId, setSelectedMenuItemId] = useState('')
   const [selectedMenuId, setSelectedMenuId] = useState('')
   const [selectedEntreeId, setSelectedEntreeId] = useState('')
   const [selectedPlatId, setSelectedPlatId] = useState('')
@@ -76,10 +70,6 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
       fetch('/api/menus/soiree')
         .then((r) => r.json())
         .then((data) => setComposableMenus(Array.isArray(data) ? data : []))
-    } else {
-      fetch(`/api/menus?ceremony=${ceremony}`)
-        .then((r) => r.json())
-        .then((data) => setMenuItems(Array.isArray(data) ? data : []))
     }
   }, [ceremony, isSoiree])
 
@@ -108,7 +98,7 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
 
   const resetForm = () => {
     setNewFirstName(''); setNewLastName(''); setNewEmail(''); setNewPhone(''); setNewGuestId('')
-    setSelectedMenuItemId(''); setSelectedMenuId(''); setSelectedEntreeId(''); setSelectedPlatId(''); setSelectedDessertId('')
+    setSelectedMenuId(''); setSelectedEntreeId(''); setSelectedPlatId(''); setSelectedDessertId('')
     setNewNotes('')
   }
 
@@ -133,9 +123,6 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
       if (optionsFor('ENTREE').length > 0 && !selectedEntreeId) { alert('Veuillez choisir une entrée'); return }
       if (optionsFor('PLAT').length > 0 && !selectedPlatId) { alert('Veuillez choisir un plat'); return }
       if (optionsFor('DESSERT').length > 0 && !selectedDessertId) { alert('Veuillez choisir un dessert'); return }
-    } else if (!isSoiree && menuItems.length > 0 && !selectedMenuItemId) {
-      alert('Veuillez choisir un menu')
-      return
     }
 
     setSubmitting(true)
@@ -164,7 +151,6 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
         body: JSON.stringify({
           guestId,
           ceremony,
-          menuItemId: !isSoiree ? selectedMenuItemId || null : null,
           menuId: isSoiree ? selectedMenuId || null : null,
           entreeOptionId: isSoiree ? selectedEntreeId || null : null,
           platOptionId: isSoiree ? selectedPlatId || null : null,
@@ -317,30 +303,6 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
             </select>
           )}
 
-          {/* Menu selection — simple ceremonies */}
-          {!isSoiree && menuItems.length > 0 && (
-            <div className="mt-5">
-              <label className="block text-sm font-medium mb-2" style={{ color: '#8b7355' }}>Menu *</label>
-              <div className="space-y-2">
-                {menuItems.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => setSelectedMenuItemId(item.id)}
-                    className="w-full text-left px-4 py-2.5 rounded-lg border text-sm transition-all"
-                    style={{
-                      borderColor: selectedMenuItemId === item.id ? '#8b7355' : '#e8d5b7',
-                      background: selectedMenuItemId === item.id ? '#fdf3e3' : 'white',
-                    }}
-                  >
-                    <div className="font-medium">{item.name}</div>
-                    {item.description && <div className="text-xs text-gray-500">{item.description}</div>}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* Menu selection — Soirée composable */}
           {isSoiree && composableMenus.length > 0 && (
             <div className="mt-5 space-y-4">
@@ -433,7 +395,7 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
               <tr style={{ background: '#fdf3e3', borderBottom: '2px solid #f0e6d3' }}>
                 <SortHeader col="name" label="Invité" />
                 <th className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Contact</th>
-                <SortHeader col="menu" label="Menu" />
+                {isSoiree && <SortHeader col="menu" label="Menu" />}
                 <th className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Notes</th>
                 <SortHeader col="respondedAt" label="Répondu le" />
                 <th className="text-right px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Actions</th>
@@ -452,7 +414,7 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
                       {inv.guest.email && <div>{inv.guest.email}</div>}
                       {inv.guest.phone && <div>{inv.guest.phone}</div>}
                     </td>
-                    <td className="px-4 py-3 text-gray-600">{menuLabel(inv)}</td>
+                    {isSoiree && <td className="px-4 py-3 text-gray-600">{menuLabel(inv)}</td>}
                     <td className="px-4 py-3 text-gray-500 max-w-32 truncate" title={inv.notes || ''}>{inv.notes || '—'}</td>
                     <td className="px-4 py-3 text-gray-500">
                       {inv.respondedAt ? new Date(inv.respondedAt).toLocaleDateString('fr-FR') : '—'}

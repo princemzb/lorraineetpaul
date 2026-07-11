@@ -5,11 +5,11 @@ import { sendConfirmationEmail } from '@/lib/email'
 export async function POST(req: Request, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params
   const body = await req.json()
-  const { menuItemId, menuId, entreeOptionId, platOptionId, dessertOptionId, notes } = body
+  const { menuId, entreeOptionId, platOptionId, dessertOptionId, notes } = body
 
   const invitation = await prisma.invitation.findUnique({
     where: { token },
-    include: { guest: true, menuItem: true },
+    include: { guest: true },
   })
 
   if (!invitation) {
@@ -32,13 +32,11 @@ export async function POST(req: Request, { params }: { params: Promise<{ token: 
         }
       : {
           status: 'CONFIRMED',
-          menuItemId: menuItemId || null,
           notes: notes || null,
           respondedAt: new Date(),
         },
     include: {
       guest: true,
-      menuItem: true,
       menu: true,
       entreeOption: true,
       platOption: true,
@@ -48,7 +46,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ token: 
 
   const menuName = isSoiree
     ? formatComposedMenu(updated.menu?.name, updated.entreeOption?.name, updated.platOption?.name, updated.dessertOption?.name)
-    : updated.menuItem?.name
+    : undefined
 
   // Send confirmation email if guest has an email
   if (invitation.guest.email) {

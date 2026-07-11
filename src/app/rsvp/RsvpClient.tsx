@@ -9,7 +9,6 @@ import { GoldButton, GoldLink, OutlineButton } from '@/components/public/Buttons
 import GuestQRCode from '@/components/public/GuestQRCode'
 import { formatCeremonyDate, formatDateRange } from '@/lib/format'
 
-type MenuItem = { id: string; name: string; description?: string }
 
 type CeremonyKey = 'CIVIL' | 'RELIGIEUX' | 'VIN_HONNEUR' | 'SOIREE'
 type CeremonyConfig = {
@@ -27,7 +26,6 @@ type ComposableMenu = { id: string; name: string; options: MenuOption[] }
 
 type CeremonyForm = {
   selected: boolean
-  menuItemId: string
 }
 
 type SoireeForm = {
@@ -117,12 +115,10 @@ function Input({
 function CeremonyCard({
   config,
   data,
-  menus,
   onChange,
 }: {
   config: CeremonyConfig
   data: CeremonyForm
-  menus: MenuItem[]
   onChange: (d: Partial<CeremonyForm>) => void
 }) {
   return (
@@ -130,7 +126,6 @@ function CeremonyCard({
       className="rounded-2xl border overflow-hidden transition-colors"
       style={{ borderColor: data.selected ? POMME : BORDER }}
     >
-      {/* Header */}
       <button
         type="button"
         onClick={() => onChange({ selected: !data.selected })}
@@ -161,50 +156,6 @@ function CeremonyCard({
           {data.selected && <span className="text-sm" style={{ color: '#050505' }}>✓</span>}
         </div>
       </button>
-
-      {/* Details (when selected) */}
-      {data.selected && (
-        <div className="px-5 pb-5 space-y-4" style={{ borderTop: `1px solid ${BORDER}`, paddingTop: '16px' }}>
-          {/* Menu */}
-          {menus.length > 0 && (
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: OR }}>
-                Votre menu <span style={{ color: '#f87171' }}>*</span>
-              </label>
-              <div className="space-y-2">
-                {menus.map((m) => (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => onChange({ menuItemId: m.id })}
-                    className="w-full text-left px-4 py-3 rounded-xl border transition-colors flex items-center gap-3"
-                    style={{
-                      borderColor: data.menuItemId === m.id ? OR : BORDER,
-                      background: data.menuItemId === m.id ? 'rgba(212,175,55,0.08)' : 'transparent',
-                    }}
-                  >
-                    <div
-                      className="w-4 h-4 rounded-full border flex-shrink-0 flex items-center justify-center"
-                      style={{
-                        borderColor: data.menuItemId === m.id ? OR : BORDER,
-                        background: data.menuItemId === m.id ? OR : 'transparent',
-                      }}
-                    >
-                      {data.menuItemId === m.id && <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#050505' }} />}
-                    </div>
-                    <div>
-                      <div className="font-medium text-sm" style={{ color: IVOIRE }}>
-                        {m.name}
-                      </div>
-                      {m.description && <div className="text-xs" style={{ color: IVOIRE_DIM }}>{m.description}</div>}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
     </div>
   )
 }
@@ -384,9 +335,6 @@ const FALLBACK_CONFIG = (ceremony: CeremonyKey): CeremonyConfig => ({
 export default function RsvpClient() {
   const [step, setStep] = useState(1)
   const [ceremonyConfigs, setCeremonyConfigs] = useState<CeremonyConfig[]>([])
-  const [civilMenus, setCivilMenus] = useState<MenuItem[]>([])
-  const [religieuxMenus, setReligieuxMenus] = useState<MenuItem[]>([])
-  const [vinHonneurMenus, setVinHonneurMenus] = useState<MenuItem[]>([])
   const [soireeMenus, setSoireeMenus] = useState<ComposableMenu[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -398,33 +346,21 @@ export default function RsvpClient() {
     lastName: '',
     email: '',
     phone: '',
-    civil: { selected: false, menuItemId: '' },
-    religieux: { selected: false, menuItemId: '' },
-    vinHonneur: { selected: false, menuItemId: '' },
+    civil: { selected: false },
+    religieux: { selected: false },
+    vinHonneur: { selected: false },
     soiree: { selected: false, menuId: '', entreeOptionId: '', platOptionId: '', dessertOptionId: '' },
     notes: '',
   })
 
   useEffect(() => {
     const load = async () => {
-      const [ceremoniesRes, civilRes, religieuxRes, vinHonneurRes, soireeRes] = await Promise.all([
+      const [ceremoniesRes, soireeRes] = await Promise.all([
         fetch('/api/ceremonies'),
-        fetch('/api/menus?ceremony=CIVIL'),
-        fetch('/api/menus?ceremony=RELIGIEUX'),
-        fetch('/api/menus?ceremony=VIN_HONNEUR'),
         fetch('/api/menus/soiree'),
       ])
-      const [configs, c, r, v, s] = await Promise.all([
-        ceremoniesRes.json(),
-        civilRes.json(),
-        religieuxRes.json(),
-        vinHonneurRes.json(),
-        soireeRes.json(),
-      ])
+      const [configs, s] = await Promise.all([ceremoniesRes.json(), soireeRes.json()])
       setCeremonyConfigs(Array.isArray(configs) ? configs : [])
-      setCivilMenus(Array.isArray(c) ? c : [])
-      setReligieuxMenus(Array.isArray(r) ? r : [])
-      setVinHonneurMenus(Array.isArray(v) ? v : [])
       setSoireeMenus(Array.isArray(s) ? s : [])
     }
     load()
@@ -465,18 +401,6 @@ export default function RsvpClient() {
       setError('Veuillez sélectionner au moins une cérémonie.')
       return false
     }
-    if (form.civil.selected && civilMenus.length > 0 && !form.civil.menuItemId) {
-      setError('Veuillez choisir un menu pour le Mariage Civil.')
-      return false
-    }
-    if (form.religieux.selected && religieuxMenus.length > 0 && !form.religieux.menuItemId) {
-      setError('Veuillez choisir un menu pour le Mariage Religieux.')
-      return false
-    }
-    if (form.vinHonneur.selected && vinHonneurMenus.length > 0 && !form.vinHonneur.menuItemId) {
-      setError("Veuillez choisir un menu pour le Vin d'honneur.")
-      return false
-    }
     if (form.soiree.selected && soireeMenus.length > 0) {
       const menu = soireeMenus.find((m) => m.id === form.soiree.menuId)
       if (!menu) {
@@ -513,22 +437,13 @@ export default function RsvpClient() {
 
     const ceremonies = []
     if (form.civil.selected) {
-      ceremonies.push({
-        ceremony: 'CIVIL',
-        menuItemId: form.civil.menuItemId || null,
-      })
+      ceremonies.push({ ceremony: 'CIVIL' })
     }
     if (form.religieux.selected) {
-      ceremonies.push({
-        ceremony: 'RELIGIEUX',
-        menuItemId: form.religieux.menuItemId || null,
-      })
+      ceremonies.push({ ceremony: 'RELIGIEUX' })
     }
     if (form.vinHonneur.selected) {
-      ceremonies.push({
-        ceremony: 'VIN_HONNEUR',
-        menuItemId: form.vinHonneur.menuItemId || null,
-      })
+      ceremonies.push({ ceremony: 'VIN_HONNEUR' })
     }
     if (form.soiree.selected) {
       ceremonies.push({
@@ -586,31 +501,16 @@ export default function RsvpClient() {
             {form.civil.selected && (
               <div className="mb-2 text-sm" style={{ color: IVOIRE }}>
                 <strong>{configFor('CIVIL').emoji} {configFor('CIVIL').name}</strong>
-                {form.civil.menuItemId && (
-                  <div style={{ color: IVOIRE_DIM }}>
-                    Menu : {civilMenus.find((m) => m.id === form.civil.menuItemId)?.name}
-                  </div>
-                )}
               </div>
             )}
             {form.religieux.selected && (
               <div className="mb-2 text-sm" style={{ color: IVOIRE }}>
                 <strong>{configFor('RELIGIEUX').emoji} {configFor('RELIGIEUX').name}</strong>
-                {form.religieux.menuItemId && (
-                  <div style={{ color: IVOIRE_DIM }}>
-                    Menu : {religieuxMenus.find((m) => m.id === form.religieux.menuItemId)?.name}
-                  </div>
-                )}
               </div>
             )}
             {form.vinHonneur.selected && (
               <div className="mb-2 text-sm" style={{ color: IVOIRE }}>
                 <strong>{configFor('VIN_HONNEUR').emoji} {configFor('VIN_HONNEUR').name}</strong>
-                {form.vinHonneur.menuItemId && (
-                  <div style={{ color: IVOIRE_DIM }}>
-                    Menu : {vinHonneurMenus.find((m) => m.id === form.vinHonneur.menuItemId)?.name}
-                  </div>
-                )}
               </div>
             )}
             {form.soiree.selected && (
@@ -747,24 +647,9 @@ export default function RsvpClient() {
                 <h2 className="text-xl font-medium mb-6" style={{ color: OR }}>
                   Quelle(s) cérémonie(s) ?
                 </h2>
-                <CeremonyCard
-                  config={configFor('CIVIL')}
-                  data={form.civil}
-                  menus={civilMenus}
-                  onChange={updateCivil}
-                />
-                <CeremonyCard
-                  config={configFor('RELIGIEUX')}
-                  data={form.religieux}
-                  menus={religieuxMenus}
-                  onChange={updateReligieux}
-                />
-                <CeremonyCard
-                  config={configFor('VIN_HONNEUR')}
-                  data={form.vinHonneur}
-                  menus={vinHonneurMenus}
-                  onChange={updateVinHonneur}
-                />
+                <CeremonyCard config={configFor('CIVIL')} data={form.civil} onChange={updateCivil} />
+                <CeremonyCard config={configFor('RELIGIEUX')} data={form.religieux} onChange={updateReligieux} />
+                <CeremonyCard config={configFor('VIN_HONNEUR')} data={form.vinHonneur} onChange={updateVinHonneur} />
                 <SoireeMenuCard config={configFor('SOIREE')} data={form.soiree} menus={soireeMenus} onChange={updateSoiree} />
                 <div className="pt-2">
                   <label className="block text-sm font-medium mb-2" style={{ color: OR }}>
@@ -809,34 +694,19 @@ export default function RsvpClient() {
 
                   {form.civil.selected && (
                     <div className="p-4 rounded-xl border" style={{ borderColor: BORDER }}>
-                      <p className="font-medium mb-1" style={{ color: OR }}>{configFor('CIVIL').emoji} {configFor('CIVIL').name}</p>
-                      {form.civil.menuItemId && (
-                        <p className="text-sm" style={{ color: IVOIRE_DIM }}>
-                          Menu : {civilMenus.find((m) => m.id === form.civil.menuItemId)?.name}
-                        </p>
-                      )}
+                      <p className="font-medium" style={{ color: OR }}>{configFor('CIVIL').emoji} {configFor('CIVIL').name}</p>
                     </div>
                   )}
 
                   {form.religieux.selected && (
                     <div className="p-4 rounded-xl border" style={{ borderColor: BORDER }}>
-                      <p className="font-medium mb-1" style={{ color: OR }}>{configFor('RELIGIEUX').emoji} {configFor('RELIGIEUX').name}</p>
-                      {form.religieux.menuItemId && (
-                        <p className="text-sm" style={{ color: IVOIRE_DIM }}>
-                          Menu : {religieuxMenus.find((m) => m.id === form.religieux.menuItemId)?.name}
-                        </p>
-                      )}
+                      <p className="font-medium" style={{ color: OR }}>{configFor('RELIGIEUX').emoji} {configFor('RELIGIEUX').name}</p>
                     </div>
                   )}
 
                   {form.vinHonneur.selected && (
                     <div className="p-4 rounded-xl border" style={{ borderColor: BORDER }}>
-                      <p className="font-medium mb-1" style={{ color: OR }}>{configFor('VIN_HONNEUR').emoji} {configFor('VIN_HONNEUR').name}</p>
-                      {form.vinHonneur.menuItemId && (
-                        <p className="text-sm" style={{ color: IVOIRE_DIM }}>
-                          Menu : {vinHonneurMenus.find((m) => m.id === form.vinHonneur.menuItemId)?.name}
-                        </p>
-                      )}
+                      <p className="font-medium" style={{ color: OR }}>{configFor('VIN_HONNEUR').emoji} {configFor('VIN_HONNEUR').name}</p>
                     </div>
                   )}
                   {form.soiree.selected && (

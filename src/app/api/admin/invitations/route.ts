@@ -11,7 +11,7 @@ export async function GET(req: Request) {
 
   const invitations = await prisma.invitation.findMany({
     where: ceremony ? { ceremony } : undefined,
-    include: { guest: true, menuItem: true, menu: true, entreeOption: true, platOption: true, dessertOption: true },
+    include: { guest: true, menu: true, entreeOption: true, platOption: true, dessertOption: true },
     orderBy: { createdAt: 'desc' },
   })
   return NextResponse.json(invitations)
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
   if (!session) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
 
   const body = await req.json()
-  const { guestId, ceremony, menuItemId, menuId, entreeOptionId, platOptionId, dessertOptionId, notes } = body
+  const { guestId, ceremony, menuId, entreeOptionId, platOptionId, dessertOptionId, notes } = body
 
   if (!guestId || !ceremony) {
     return NextResponse.json({ error: 'Invité et cérémonie requis' }, { status: 400 })
@@ -42,7 +42,6 @@ export async function POST(req: Request) {
       ceremony,
       status: 'CONFIRMED',
       respondedAt: new Date(),
-      menuItemId: menuItemId || null,
       menuId: menuId || null,
       entreeOptionId: entreeOptionId || null,
       platOptionId: platOptionId || null,

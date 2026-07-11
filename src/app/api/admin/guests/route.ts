@@ -7,7 +7,7 @@ export async function GET() {
   if (!session) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
 
   const guests = await prisma.guest.findMany({
-    include: { invitations: { include: { menuItem: true } } },
+    include: { invitations: true },
     orderBy: { lastName: 'asc' },
   })
   return NextResponse.json(guests)
