@@ -85,69 +85,6 @@ export async function sendConfirmationEmail({
   })
 }
 
-export async function sendInvitationEmail({
-  to,
-  guestName,
-  ceremony,
-  invitationUrl,
-}: {
-  to: string
-  guestName: string
-  ceremony: 'CIVIL' | 'RELIGIEUX' | 'VIN_HONNEUR' | 'SOIREE'
-  invitationUrl: string
-}) {
-  const { label: ceremonyLabel, dateLabel: weddingDate } = await getCeremonyDisplay(ceremony)
-
-  const html = `
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <style>
-    body { font-family: Georgia, serif; color: #3a3a3a; background: #fdf9f4; margin: 0; padding: 0; }
-    .container { max-width: 600px; margin: 40px auto; background: white; border: 1px solid #e8d5b7; border-radius: 8px; overflow: hidden; }
-    .header { background: linear-gradient(135deg, #8b7355, #c9a96e); color: white; padding: 40px; text-align: center; }
-    .header h1 { margin: 0; font-size: 28px; font-weight: normal; letter-spacing: 2px; }
-    .header p { margin: 8px 0 0; font-size: 14px; opacity: 0.9; }
-    .body { padding: 40px; }
-    .body p { line-height: 1.8; font-size: 16px; }
-    .btn { display: inline-block; background: #8b7355; color: white; text-decoration: none; padding: 16px 32px; border-radius: 4px; margin-top: 24px; font-size: 16px; letter-spacing: 1px; }
-    .footer { background: #f9f4ec; padding: 20px 40px; text-align: center; color: #9a8a7a; font-size: 13px; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>Lorraine &amp; Paul</h1>
-      <p>${weddingDate} — ${ceremonyLabel}</p>
-    </div>
-    <div class="body">
-      <p>Cher(e) ${guestName},</p>
-      <p>Nous avons le plaisir de vous inviter à notre <strong>${ceremonyLabel}</strong> qui aura lieu le <strong>${weddingDate}</strong>.</p>
-      <p>Merci de confirmer votre présence en cliquant sur le bouton ci-dessous :</p>
-      <div style="text-align: center; margin: 32px 0;">
-        <a href="${invitationUrl}" class="btn">Répondre à l'invitation</a>
-      </div>
-      <p>Nous espérons vous compter parmi nous pour partager ce moment de bonheur.</p>
-      <p>Avec toute notre affection,<br><strong>Lorraine &amp; Paul</strong></p>
-    </div>
-    <div class="footer">
-      <p>${weddingDate}</p>
-      <p>Ce message a été envoyé automatiquement, merci de ne pas y répondre directement.</p>
-    </div>
-  </div>
-</body>
-</html>
-  `
-
-  await transporter.sendMail({
-    from: process.env.MAIL_FROM || 'Lorraine & Paul <noreply@mariage.fr>',
-    to,
-    subject: `Invitation — ${ceremonyLabel} de Lorraine & Paul`,
-    html,
-  })
-}
-
 export async function sendContactNotificationEmail({
   firstName,
   lastName,

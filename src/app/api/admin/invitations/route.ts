@@ -22,7 +22,7 @@ export async function POST(req: Request) {
   if (!session) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
 
   const body = await req.json()
-  const { guestId, ceremony } = body
+  const { guestId, ceremony, menuItemId, menuId, entreeOptionId, platOptionId, dessertOptionId, notes } = body
 
   if (!guestId || !ceremony) {
     return NextResponse.json({ error: 'Invité et cérémonie requis' }, { status: 400 })
@@ -37,7 +37,18 @@ export async function POST(req: Request) {
   }
 
   const invitation = await prisma.invitation.create({
-    data: { guestId, ceremony },
+    data: {
+      guestId,
+      ceremony,
+      status: 'CONFIRMED',
+      respondedAt: new Date(),
+      menuItemId: menuItemId || null,
+      menuId: menuId || null,
+      entreeOptionId: entreeOptionId || null,
+      platOptionId: platOptionId || null,
+      dessertOptionId: dessertOptionId || null,
+      notes: notes || null,
+    },
     include: { guest: true },
   })
   return NextResponse.json(invitation, { status: 201 })

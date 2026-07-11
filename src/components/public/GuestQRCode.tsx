@@ -4,7 +4,15 @@ import { useEffect, useState } from 'react'
 import QRCode from 'qrcode'
 import { GoldButton, OutlineButton } from '@/components/public/Buttons'
 
-export default function GuestQRCode({ guestId, guestName }: { guestId: string; guestName: string }) {
+export default function GuestQRCode({
+  guestId,
+  guestName,
+  light,
+}: {
+  guestId: string
+  guestName: string
+  light?: boolean
+}) {
   const [dataUrl, setDataUrl] = useState('')
 
   useEffect(() => {
@@ -55,16 +63,16 @@ export default function GuestQRCode({ guestId, guestName }: { guestId: string; g
         src={dataUrl}
         alt="Votre QR code"
         className="mx-auto rounded-xl border"
-        style={{ borderColor: 'var(--noir-border)', width: 200, height: 200 }}
+        style={{ borderColor: light ? '#e8d5b7' : 'var(--noir-border)', width: 200, height: 200 }}
       />
-      <p className="text-sm mt-3 mb-5" style={{ color: 'var(--ivoire-dim)' }}>
+      <p className="text-sm mt-3 mb-5" style={{ color: light ? '#6b6b6b' : 'var(--ivoire-dim)' }}>
         Présentez ce QR code le jour J pour être identifié(e) rapidement à votre arrivée.
       </p>
       <div className="flex gap-3 justify-center flex-wrap">
         <GoldButton onClick={handleDownload} className="px-6 py-2.5 text-sm">
           Télécharger
         </GoldButton>
-        <OutlineButton onClick={handleShare} className="px-6 py-2.5 text-sm">
+        <OutlineButton onClick={handleShare} className="px-6 py-2.5 text-sm" style={light ? { borderColor: '#8b7355', color: '#8b7355' } : undefined}>
           Partager
         </OutlineButton>
       </div>

@@ -1,16 +1,19 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import GuestQRCode from '@/components/public/GuestQRCode'
 
 type Guest = { id: string; firstName: string; lastName: string; email?: string; phone?: string }
-type MenuItem = { id: string; name: string }
+type MenuItem = { id: string; name: string; description?: string }
+type CourseType = 'ENTREE' | 'PLAT' | 'DESSERT'
+type MenuOption = { id: string; course: CourseType; name: string; description?: string }
+type ComposableMenu = { id: string; name: string; options: MenuOption[] }
+
 type Invitation = {
   id: string
-  token: string
   ceremony: 'CIVIL' | 'RELIGIEUX' | 'VIN_HONNEUR' | 'SOIREE'
   status: 'PENDING' | 'CONFIRMED'
   notes?: string
-  emailSent: boolean
   respondedAt?: string
   guest: Guest
   menuItem?: MenuItem
@@ -19,6 +22,8 @@ type Invitation = {
   platOption?: MenuItem
   dessertOption?: MenuItem
 }
+
+const COURSE_LABELS: Record<CourseType, string> = { ENTREE: 'Entrée', PLAT: 'Plat', DESSERT: 'Dessert' }
 
 function menuLabel(inv: Invitation): string {
   if (inv.ceremony === 'SOIREE') {
@@ -32,6 +37,8 @@ function menuLabel(inv: Invitation): string {
 export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'RELIGIEUX' | 'VIN_HONNEUR' | 'SOIREE' }) {
   const [invitations, setInvitations] = useState<Invitation[]>([])
   const [guests, setGuests] = useState<Guest[]>([])
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([])
+  const [composableMenus, setComposableMenus] = useState<ComposableMenu[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddForm, setShowAddForm] = useState(false)
   const [newGuestId, setNewGuestId] = useState('')
@@ -40,11 +47,18 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
   const [newEmail, setNewEmail] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [addMode, setAddMode] = useState<'existing' | 'new'>('new')
+  const [selectedMenuItemId, setSelectedMenuItemId] = useState('')
+  const [selectedMenuId, setSelectedMenuId] = useState('')
+  const [selectedEntreeId, setSelectedEntreeId] = useState('')
+  const [selectedPlatId, setSelectedPlatId] = useState('')
+  const [selectedDessertId, setSelectedDessertId] = useState('')
+  const [newNotes, setNewNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const [copiedId, setCopiedId] = useState<string | null>(null)
-  const [sendingId, setSendingId] = useState<string | null>(null)
   const [ceremonyLabel, setCeremonyLabel] = useState<string>(ceremony)
   const [ceremonyEmoji, setCeremonyEmoji] = useState('💒')
+  const [createdGuest, setCreatedGuest] = useState<{ id: string; firstName: string; lastName: string } | null>(null)
+
+  const isSoiree = ceremony === 'SOIREE'
 
   useEffect(() => {
     fetch('/api/admin/ceremonies')
@@ -56,7 +70,16 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
           setCeremonyEmoji(config.emoji)
         }
       })
-  }, [ceremony])
+    if (isSoiree) {
+      fetch('/api/menus/soiree')
+        .then((r) => r.json())
+        .then((data) => setComposableMenus(Array.isArray(data) ? data : []))
+    } else {
+      fetch(`/api/menus?ceremony=${ceremony}`)
+        .then((r) => r.json())
+        .then((data) => setMenuItems(Array.isArray(data) ? data : []))
+    }
+  }, [ceremony, isSoiree])
 
   const load = useCallback(async () => {
     const [invRes, guestRes] = await Promise.all([
@@ -71,25 +94,21 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
 
   useEffect(() => { load() }, [load])
 
-  const copyLink = (token: string, id: string) => {
-    const url = `${window.location.origin}/invitation/${token}`
-    navigator.clipboard.writeText(url)
-    setCopiedId(id)
-    setTimeout(() => setCopiedId(null), 2000)
+  const selectedComposableMenu = composableMenus.find((m) => m.id === selectedMenuId)
+  const optionsFor = (course: CourseType) => selectedComposableMenu?.options.filter((o) => o.course === course) || []
+
+  const chooseComposableMenu = (menuId: string) => {
+    setSelectedMenuId(menuId)
+    setSelectedEntreeId('')
+    setSelectedPlatId('')
+    setSelectedDessertId('')
   }
 
-  const sendEmail = async (id: string) => {
-    setSendingId(id)
-    const res = await fetch(`/api/admin/invitations/${id}/send`, { method: 'POST' })
-    if (res.ok) {
-      await load()
-    } else {
-      const data = await res.json()
-      alert(data.error || 'Erreur lors de l\'envoi')
-    }
-    setSendingId(null)
+  const resetForm = () => {
+    setNewFirstName(''); setNewLastName(''); setNewEmail(''); setNewPhone(''); setNewGuestId('')
+    setSelectedMenuItemId(''); setSelectedMenuId(''); setSelectedEntreeId(''); setSelectedPlatId(''); setSelectedDessertId('')
+    setNewNotes('')
   }
-
 
   const deleteInvitation = async (id: string) => {
     if (!confirm('Supprimer cette invitation ?')) return
@@ -98,15 +117,31 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
   }
 
   const handleAdd = async () => {
+    if (addMode === 'new' && (!newFirstName || !newLastName)) {
+      alert('Prénom et nom requis')
+      return
+    }
+    if (addMode === 'existing' && !newGuestId) {
+      alert('Choisissez un invité')
+      return
+    }
+
+    if (isSoiree && composableMenus.length > 0) {
+      if (!selectedMenuId) { alert('Veuillez choisir un menu'); return }
+      if (optionsFor('ENTREE').length > 0 && !selectedEntreeId) { alert('Veuillez choisir une entrée'); return }
+      if (optionsFor('PLAT').length > 0 && !selectedPlatId) { alert('Veuillez choisir un plat'); return }
+      if (optionsFor('DESSERT').length > 0 && !selectedDessertId) { alert('Veuillez choisir un dessert'); return }
+    } else if (!isSoiree && menuItems.length > 0 && !selectedMenuItemId) {
+      alert('Veuillez choisir un menu')
+      return
+    }
+
     setSubmitting(true)
     try {
       let guestId = newGuestId
+      let guestFirstName = newFirstName
+      let guestLastName = newLastName
       if (addMode === 'new') {
-        if (!newFirstName || !newLastName) {
-          alert('Prénom et nom requis')
-          setSubmitting(false)
-          return
-        }
         const gRes = await fetch('/api/admin/guests', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -115,16 +150,32 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
         const gData = await gRes.json()
         if (!gRes.ok) { alert(gData.error); setSubmitting(false); return }
         guestId = gData.id
+      } else {
+        const existingGuest = guests.find((g) => g.id === newGuestId)
+        guestFirstName = existingGuest?.firstName || ''
+        guestLastName = existingGuest?.lastName || ''
       }
+
       const iRes = await fetch('/api/admin/invitations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ guestId, ceremony }),
+        body: JSON.stringify({
+          guestId,
+          ceremony,
+          menuItemId: !isSoiree ? selectedMenuItemId || null : null,
+          menuId: isSoiree ? selectedMenuId || null : null,
+          entreeOptionId: isSoiree ? selectedEntreeId || null : null,
+          platOptionId: isSoiree ? selectedPlatId || null : null,
+          dessertOptionId: isSoiree ? selectedDessertId || null : null,
+          notes: newNotes || null,
+        }),
       })
       const iData = await iRes.json()
       if (!iRes.ok) { alert(iData.error); setSubmitting(false); return }
+
       setShowAddForm(false)
-      setNewFirstName(''); setNewLastName(''); setNewEmail(''); setNewPhone(''); setNewGuestId('')
+      setCreatedGuest({ id: guestId, firstName: guestFirstName, lastName: guestLastName })
+      resetForm()
       await load()
     } finally {
       setSubmitting(false)
@@ -151,7 +202,7 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
             📥 Exporter CSV
           </a>
           <button
-            onClick={() => setShowAddForm(true)}
+            onClick={() => { setCreatedGuest(null); setShowAddForm(true) }}
             className="px-4 py-2 rounded-lg text-white text-sm font-medium"
             style={{ background: '#8b7355' }}
           >
@@ -159,6 +210,27 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
           </button>
         </div>
       </div>
+
+      {/* QR code confirmation after adding */}
+      {createdGuest && (
+        <div className="bg-white rounded-2xl border shadow-sm p-8 mb-6 text-center" style={{ borderColor: '#f0e6d3' }}>
+          <div className="text-4xl mb-2">🎉</div>
+          <h3 className="font-medium text-lg mb-1" style={{ color: '#8b7355' }}>
+            {createdGuest.firstName} {createdGuest.lastName} est inscrit(e) et confirmé(e)
+          </h3>
+          <p className="text-gray-500 text-sm mb-6">Voici son QR code, à présenter le jour J pour le check-in.</p>
+          <div className="max-w-xs mx-auto">
+            <GuestQRCode guestId={createdGuest.id} guestName={`${createdGuest.firstName} ${createdGuest.lastName}`} light />
+          </div>
+          <button
+            onClick={() => setCreatedGuest(null)}
+            className="mt-6 px-4 py-2 rounded-lg text-sm border"
+            style={{ borderColor: '#e8d5b7', color: '#8b7355' }}
+          >
+            Fermer
+          </button>
+        </div>
+      )}
 
       {/* Add form */}
       {showAddForm && (
@@ -195,11 +267,104 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
               ))}
             </select>
           )}
-          <div className="flex gap-3 mt-4">
+
+          {/* Menu selection — simple ceremonies */}
+          {!isSoiree && menuItems.length > 0 && (
+            <div className="mt-5">
+              <label className="block text-sm font-medium mb-2" style={{ color: '#8b7355' }}>Menu *</label>
+              <div className="space-y-2">
+                {menuItems.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setSelectedMenuItemId(item.id)}
+                    className="w-full text-left px-4 py-2.5 rounded-lg border text-sm transition-all"
+                    style={{
+                      borderColor: selectedMenuItemId === item.id ? '#8b7355' : '#e8d5b7',
+                      background: selectedMenuItemId === item.id ? '#fdf3e3' : 'white',
+                    }}
+                  >
+                    <div className="font-medium">{item.name}</div>
+                    {item.description && <div className="text-xs text-gray-500">{item.description}</div>}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Menu selection — Soirée composable */}
+          {isSoiree && composableMenus.length > 0 && (
+            <div className="mt-5 space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: '#8b7355' }}>Menu *</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {composableMenus.map((m) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => chooseComposableMenu(m.id)}
+                      className="px-4 py-2.5 rounded-lg border text-sm font-medium transition-all"
+                      style={{
+                        borderColor: selectedMenuId === m.id ? '#8b7355' : '#e8d5b7',
+                        background: selectedMenuId === m.id ? '#fdf3e3' : 'white',
+                      }}
+                    >
+                      {m.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {selectedComposableMenu &&
+                (['ENTREE', 'PLAT', 'DESSERT'] as CourseType[]).map((course) => {
+                  const options = optionsFor(course)
+                  if (options.length === 0) return null
+                  const selectedId = course === 'ENTREE' ? selectedEntreeId : course === 'PLAT' ? selectedPlatId : selectedDessertId
+                  const setSelectedId = course === 'ENTREE' ? setSelectedEntreeId : course === 'PLAT' ? setSelectedPlatId : setSelectedDessertId
+                  return (
+                    <div key={course}>
+                      <label className="block text-sm font-medium mb-2" style={{ color: '#8b7355' }}>{COURSE_LABELS[course]} *</label>
+                      <div className="space-y-2">
+                        {options.map((o) => (
+                          <button
+                            key={o.id}
+                            type="button"
+                            onClick={() => setSelectedId(o.id)}
+                            className="w-full text-left px-4 py-2.5 rounded-lg border text-sm transition-all"
+                            style={{
+                              borderColor: selectedId === o.id ? '#8b7355' : '#e8d5b7',
+                              background: selectedId === o.id ? '#fdf3e3' : 'white',
+                            }}
+                          >
+                            <div className="font-medium">{o.name}</div>
+                            {o.description && <div className="text-xs text-gray-500">{o.description}</div>}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })}
+            </div>
+          )}
+
+          <div className="mt-5">
+            <label className="block text-sm font-medium mb-2" style={{ color: '#8b7355' }}>
+              Notes <span className="font-normal text-gray-400">(allergies, régime...)</span>
+            </label>
+            <input
+              value={newNotes}
+              onChange={e => setNewNotes(e.target.value)}
+              placeholder="Ex : allergique aux noix"
+              className="border rounded-lg px-3 py-2 text-sm w-full focus:outline-none"
+              style={{ borderColor: '#e8d5b7' }}
+            />
+          </div>
+
+          <div className="flex gap-3 mt-5">
             <button onClick={handleAdd} disabled={submitting} className="px-4 py-2 rounded-lg text-white text-sm" style={{ background: '#8b7355' }}>
-              {submitting ? 'Ajout...' : 'Ajouter'}
+              {submitting ? 'Ajout...' : '✓ Confirmer l\'inscription'}
             </button>
-            <button onClick={() => setShowAddForm(false)} className="px-4 py-2 rounded-lg text-sm border" style={{ borderColor: '#e8d5b7', color: '#8b7355' }}>
+            <button onClick={() => { setShowAddForm(false); resetForm() }} className="px-4 py-2 rounded-lg text-sm border" style={{ borderColor: '#e8d5b7', color: '#8b7355' }}>
               Annuler
             </button>
           </div>
@@ -245,25 +410,6 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => copyLink(inv.token, inv.id)}
-                          className="px-2 py-1 rounded text-xs border transition-all"
-                          style={{ borderColor: '#e8d5b7', color: copiedId === inv.id ? '#16a34a' : '#8b7355' }}
-                          title="Copier le lien"
-                        >
-                          {copiedId === inv.id ? '✓ Copié' : '🔗 Lien'}
-                        </button>
-                        {inv.guest.email && (
-                          <button
-                            onClick={() => sendEmail(inv.id)}
-                            disabled={sendingId === inv.id}
-                            className="px-2 py-1 rounded text-xs border transition-all"
-                            style={{ borderColor: '#e8d5b7', color: inv.emailSent ? '#16a34a' : '#8b7355' }}
-                            title={inv.emailSent ? 'Email déjà envoyé' : 'Envoyer le lien par email'}
-                          >
-                            {sendingId === inv.id ? '...' : inv.emailSent ? '✓ Email' : '📧 Email'}
-                          </button>
-                        )}
                         <button
                           onClick={() => deleteInvitation(inv.id)}
                           className="px-2 py-1 rounded text-xs border transition-all"

@@ -74,10 +74,12 @@ export function OutlineButton({
   children,
   onClick,
   className = '',
+  style,
 }: {
   children: ReactNode
   onClick?: () => void
   className?: string
+  style?: React.CSSProperties
 }) {
   return (
     <motion.button
@@ -86,7 +88,7 @@ export function OutlineButton({
       whileHover={{ scale: 1.02, borderColor: 'var(--pomme-light)' }}
       whileTap={{ scale: 0.98 }}
       className={`rounded-full font-medium tracking-wide border transition-colors ${className}`}
-      style={{ borderColor: 'var(--noir-border)', color: 'var(--ivoire)' }}
+      style={{ borderColor: 'var(--noir-border)', color: 'var(--ivoire)', ...style }}
     >
       {children}
     </motion.button>
