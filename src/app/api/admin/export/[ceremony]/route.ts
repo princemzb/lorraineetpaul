@@ -50,10 +50,6 @@ export async function GET(req: Request, { params }: { params: Promise<{ ceremony
       telephone: inv.guest.phone || '',
       ceremonie: ceremonyConfig?.name || ceremonyUpper,
       menu,
-      menuName: inv.menu?.name || '',
-      entree: inv.entreeOption?.name || '',
-      plat: inv.platOption?.name || '',
-      dessert: inv.dessertOption?.name || '',
       notes: inv.notes || '',
       respondedAt: inv.respondedAt,
       date_reponse: inv.respondedAt ? inv.respondedAt.toLocaleDateString('fr-FR') : '',
@@ -136,40 +132,6 @@ export async function GET(req: Request, { params }: { params: Promise<{ ceremony
   paulRow.getCell('nom').font = { bold: true }
   paulRow.getCell('nom').fill = PAUL_FILL
   paulRow.getCell('prenom').font = { bold: true }
-
-  // Récapitulatif traiteur : décompte de chaque entrée / plat / dessert
-  const courseGroups: Array<{ label: string; field: 'entree' | 'plat' | 'dessert' }> = [
-    { label: 'Entrées', field: 'entree' },
-    { label: 'Plats', field: 'plat' },
-    { label: 'Desserts', field: 'dessert' },
-  ]
-
-  const hasCourseData = rows.some((r) => r.entree || r.plat || r.dessert)
-
-  if (hasCourseData) {
-    sheet.addRow({})
-    const cateringTitle = sheet.addRow({ nom: 'RÉCAPITULATIF TRAITEUR' })
-    cateringTitle.getCell('nom').font = { bold: true, size: 13 }
-
-    for (const group of courseGroups) {
-      const counts = new Map<string, number>()
-      for (const r of rows) {
-        const value = r[group.field]
-        if (value) counts.set(value, (counts.get(value) || 0) + 1)
-      }
-      if (counts.size === 0) continue
-
-      const header = sheet.addRow({ nom: group.label, prenom: 'Nombre' })
-      header.getCell('nom').font = { bold: true }
-      header.getCell('nom').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFDF3E3' } }
-      header.getCell('prenom').font = { bold: true }
-      header.getCell('prenom').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFDF3E3' } }
-
-      for (const [name, count] of [...counts.entries()].sort((a, b) => b[1] - a[1])) {
-        sheet.addRow({ nom: name, prenom: count })
-      }
-    }
-  }
 
   const buffer = await workbook.xlsx.writeBuffer()
   const filename = `invitations-${ceremonyUpper.toLowerCase()}-${new Date().toISOString().split('T')[0]}.xlsx`

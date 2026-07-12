@@ -236,6 +236,15 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
           >
             📥 Exporter Excel
           </a>
+          {isSoiree && (
+            <a
+              href={`/api/admin/export/${ceremony.toLowerCase()}/traiteur`}
+              className="px-4 py-2 rounded-lg border text-sm font-medium transition-all"
+              style={{ borderColor: '#8b7355', color: '#8b7355' }}
+            >
+              🍽️ Export traiteur
+            </a>
+          )}
           <button
             onClick={() => { setCreatedGuest(null); setShowAddForm(true) }}
             className="px-4 py-2 rounded-lg text-white text-sm font-medium"
