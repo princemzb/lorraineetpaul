@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { GoldLink } from '@/components/public/Buttons'
+import FormattedText from '@/components/public/FormattedText'
 
 type ThemePhoto = { id: string; description: string | null; order: number }
 
@@ -106,7 +107,7 @@ export default function ThemeCarousel({
             className="text-lg sm:text-xl md:text-2xl leading-relaxed font-display"
             style={{ color: 'var(--ivoire)' }}
           >
-            {current.description || 'Aucune description pour cette photo.'}
+            {current.description ? <FormattedText text={current.description} /> : 'Aucune description pour cette photo.'}
           </motion.p>
         </AnimatePresence>
       </div>

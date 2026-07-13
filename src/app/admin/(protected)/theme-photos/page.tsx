@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback, useRef } from 'react'
+import RichTextEditor from '@/components/admin/RichTextEditor'
 
 type Photo = { id: string; description: string | null; order: number }
 
@@ -39,13 +40,11 @@ function PhotoCard({
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={`/api/theme-photos/${photo.id}/image`} alt="" className="w-40 h-40 object-cover flex-shrink-0" />
       <div className="p-4 flex-1 flex flex-col">
-        <textarea
+        <RichTextEditor
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={setDescription}
           placeholder="Texte décrivant le thème pour cette photo (tenue attendue, couleurs, ambiance...)"
           rows={3}
-          className="w-full border rounded-lg px-3 py-2 text-sm resize-none focus:outline-none"
-          style={{ borderColor: '#e8d5b7' }}
         />
         <div className="flex items-center gap-2 mt-2">
           <button
@@ -192,14 +191,14 @@ export default function ThemePhotosPage() {
             accept="image/jpeg,image/png,image/webp"
             className="text-sm text-gray-500 flex-shrink-0 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:text-white file:cursor-pointer file:bg-[#8b7355] hover:file:bg-[#6b5a45] cursor-pointer"
           />
-          <textarea
-            value={newDescription}
-            onChange={(e) => setNewDescription(e.target.value)}
-            placeholder="Texte décrivant le thème pour cette photo (optionnel, modifiable ensuite)"
-            rows={2}
-            className="flex-1 border rounded-lg px-3 py-2 text-sm resize-none focus:outline-none"
-            style={{ borderColor: '#e8d5b7' }}
-          />
+          <div className="flex-1">
+            <RichTextEditor
+              value={newDescription}
+              onChange={setNewDescription}
+              placeholder="Texte décrivant le thème pour cette photo (optionnel, modifiable ensuite)"
+              rows={2}
+            />
+          </div>
           <button
             onClick={handleUpload}
             disabled={uploading}
