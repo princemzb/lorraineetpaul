@@ -90,6 +90,7 @@ export default function AdminSidebar({ ceremonies, email }: { ceremonies: Ceremo
           <NavLink href="/admin/hero-photos" label="Photos d'accueil" icon="📷" />
           <NavLink href="/admin/theme-photos" label="Thème & consignes" icon="🎨" />
           <NavLink href="/admin/checkin" label="Check-in invités" icon="✅" />
+          <NavLink href="/admin/musique" label="Musique" icon="🎵" />
         </nav>
 
         <div className="p-4 border-t border-white/10">

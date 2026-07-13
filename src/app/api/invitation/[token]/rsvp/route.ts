@@ -5,7 +5,7 @@ import { sendConfirmationEmail } from '@/lib/email'
 export async function POST(req: Request, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params
   const body = await req.json()
-  const { menuId, entreeOptionId, platOptionId, dessertOptionId, notes } = body
+  const { menuId, entreeOptionId, platOptionId, dessertOptionId, notes, songTitle, songArtist, songYoutubeUrl } = body
 
   const invitation = await prisma.invitation.findUnique({
     where: { token },
@@ -15,6 +15,15 @@ export async function POST(req: Request, { params }: { params: Promise<{ token: 
   if (!invitation) {
     return NextResponse.json({ error: 'Invitation introuvable' }, { status: 404 })
   }
+
+  await prisma.guest.update({
+    where: { id: invitation.guestId },
+    data: {
+      songTitle: songTitle || null,
+      songArtist: songArtist || null,
+      songYoutubeUrl: songYoutubeUrl || null,
+    },
+  })
 
   const isSoiree = invitation.ceremony === 'SOIREE'
 

@@ -7,6 +7,7 @@ import LuxeBackground from '@/components/public/LuxeBackground'
 import Card from '@/components/public/Card'
 import { GoldButton } from '@/components/public/Buttons'
 import GuestQRCode from '@/components/public/GuestQRCode'
+import YouTubeIcon from '@/components/public/YouTubeIcon'
 import { formatCeremonyDate } from '@/lib/format'
 
 type CourseType = 'ENTREE' | 'PLAT' | 'DESSERT'
@@ -20,6 +21,9 @@ type Guest = {
   firstName: string
   lastName: string
   email?: string
+  songTitle?: string
+  songArtist?: string
+  songYoutubeUrl?: string
 }
 
 type Invitation = {
@@ -59,6 +63,9 @@ export default function InvitationClient() {
   const [selectedPlatId, setSelectedPlatId] = useState('')
   const [selectedDessertId, setSelectedDessertId] = useState('')
   const [notes, setNotes] = useState('')
+  const [songTitle, setSongTitle] = useState('')
+  const [songArtist, setSongArtist] = useState('')
+  const [songYoutubeUrl, setSongYoutubeUrl] = useState('')
 
   const isSoiree = invitation?.ceremony === 'SOIREE'
 
@@ -83,6 +90,9 @@ export default function InvitationClient() {
             setSelectedDessertId(data.invitation.dessertOptionId || '')
             setNotes(data.invitation.notes || '')
           }
+          setSongTitle(data.invitation.guest?.songTitle || '')
+          setSongArtist(data.invitation.guest?.songArtist || '')
+          setSongYoutubeUrl(data.invitation.guest?.songYoutubeUrl || '')
         }
         setLoading(false)
       })
@@ -133,6 +143,9 @@ export default function InvitationClient() {
         platOptionId: isSoiree ? selectedPlatId || null : null,
         dessertOptionId: isSoiree ? selectedDessertId || null : null,
         notes,
+        songTitle: songTitle || null,
+        songArtist: songArtist || null,
+        songYoutubeUrl: songYoutubeUrl || null,
       }),
     })
     const data = await res.json()
@@ -393,6 +406,44 @@ export default function InvitationClient() {
                     className="w-full border rounded-xl p-4 resize-none focus:outline-none bg-transparent"
                     style={{ borderColor: 'var(--noir-border)', color: 'var(--ivoire)' }}
                   />
+                </div>
+
+                {/* Song suggestion */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-medium mb-3" style={{ color: 'var(--or-light)' }}>
+                    🎵 Proposez une chanson
+                    <span className="text-sm font-normal ml-2" style={{ color: 'var(--ivoire-dim)' }}>
+                      (optionnel — pour la playlist du mariage)
+                    </span>
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3 mb-3">
+                    <input
+                      value={songTitle}
+                      onChange={(e) => setSongTitle(e.target.value)}
+                      placeholder="Titre du morceau"
+                      className="w-full border rounded-xl px-4 py-3 focus:outline-none bg-transparent"
+                      style={{ borderColor: 'var(--noir-border)', color: 'var(--ivoire)' }}
+                    />
+                    <input
+                      value={songArtist}
+                      onChange={(e) => setSongArtist(e.target.value)}
+                      placeholder="Artiste"
+                      className="w-full border rounded-xl px-4 py-3 focus:outline-none bg-transparent"
+                      style={{ borderColor: 'var(--noir-border)', color: 'var(--ivoire)' }}
+                    />
+                  </div>
+                  <div className="relative">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <YouTubeIcon className="w-6 h-4" />
+                    </div>
+                    <input
+                      value={songYoutubeUrl}
+                      onChange={(e) => setSongYoutubeUrl(e.target.value)}
+                      placeholder="Lien YouTube (optionnel)"
+                      className="w-full border rounded-xl pl-12 pr-4 py-3 focus:outline-none bg-transparent"
+                      style={{ borderColor: 'var(--noir-border)', color: 'var(--ivoire)' }}
+                    />
+                  </div>
                 </div>
 
                 {/* Submit */}

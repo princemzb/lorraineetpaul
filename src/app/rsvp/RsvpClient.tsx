@@ -7,6 +7,7 @@ import LuxeBackground from '@/components/public/LuxeBackground'
 import Card from '@/components/public/Card'
 import { GoldButton, GoldLink, OutlineButton } from '@/components/public/Buttons'
 import GuestQRCode from '@/components/public/GuestQRCode'
+import YouTubeIcon from '@/components/public/YouTubeIcon'
 import { formatCeremonyDate, formatDateRange } from '@/lib/format'
 
 
@@ -46,6 +47,9 @@ type FormData = {
   vinHonneur: CeremonyForm
   soiree: SoireeForm
   notes: string
+  songTitle: string
+  songArtist: string
+  songYoutubeUrl: string
 }
 
 const COURSE_LABELS: Record<CourseType, string> = { ENTREE: 'Entrée', PLAT: 'Plat', DESSERT: 'Dessert' }
@@ -351,6 +355,9 @@ export default function RsvpClient() {
     vinHonneur: { selected: false },
     soiree: { selected: false, menuId: '', entreeOptionId: '', platOptionId: '', dessertOptionId: '' },
     notes: '',
+    songTitle: '',
+    songArtist: '',
+    songYoutubeUrl: '',
   })
 
   useEffect(() => {
@@ -465,6 +472,9 @@ export default function RsvpClient() {
         phone: form.phone,
         ceremonies,
         notes: form.notes,
+        songTitle: form.songTitle || null,
+        songArtist: form.songArtist || null,
+        songYoutubeUrl: form.songYoutubeUrl || null,
       }),
     })
 
@@ -667,6 +677,43 @@ export default function RsvpClient() {
                     style={{ borderColor: BORDER, color: IVOIRE }}
                   />
                 </div>
+
+                <div className="pt-4">
+                  <label className="block text-sm font-medium mb-2" style={{ color: OR }}>
+                    🎵 Proposez une chanson
+                    <span className="font-normal ml-1" style={{ color: IVOIRE_DIM }}>
+                      (optionnel — pour la playlist du mariage)
+                    </span>
+                  </label>
+                  <div className="grid grid-cols-2 gap-3 mb-3">
+                    <input
+                      value={form.songTitle}
+                      onChange={(e) => setForm((f) => ({ ...f, songTitle: e.target.value }))}
+                      placeholder="Titre du morceau"
+                      className="w-full border rounded-xl px-4 py-3 focus:outline-none bg-transparent"
+                      style={{ borderColor: BORDER, color: IVOIRE }}
+                    />
+                    <input
+                      value={form.songArtist}
+                      onChange={(e) => setForm((f) => ({ ...f, songArtist: e.target.value }))}
+                      placeholder="Artiste"
+                      className="w-full border rounded-xl px-4 py-3 focus:outline-none bg-transparent"
+                      style={{ borderColor: BORDER, color: IVOIRE }}
+                    />
+                  </div>
+                  <div className="relative">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <YouTubeIcon className="w-6 h-4" />
+                    </div>
+                    <input
+                      value={form.songYoutubeUrl}
+                      onChange={(e) => setForm((f) => ({ ...f, songYoutubeUrl: e.target.value }))}
+                      placeholder="Lien YouTube (optionnel)"
+                      className="w-full border rounded-xl pl-12 pr-4 py-3 focus:outline-none bg-transparent"
+                      style={{ borderColor: BORDER, color: IVOIRE }}
+                    />
+                  </div>
+                </div>
               </motion.div>
             )}
 
@@ -731,6 +778,15 @@ export default function RsvpClient() {
                     <div className="p-4 rounded-xl border" style={{ borderColor: BORDER }}>
                       <p className="text-sm mb-1" style={{ color: IVOIRE_DIM }}>Notes</p>
                       <p className="text-sm" style={{ color: IVOIRE }}>{form.notes}</p>
+                    </div>
+                  )}
+
+                  {form.songTitle && (
+                    <div className="p-4 rounded-xl border" style={{ borderColor: BORDER }}>
+                      <p className="text-sm mb-1" style={{ color: IVOIRE_DIM }}>🎵 Chanson proposée</p>
+                      <p className="text-sm" style={{ color: IVOIRE }}>
+                        {form.songTitle}{form.songArtist && ` — ${form.songArtist}`}
+                      </p>
                     </div>
                   )}
                 </div>

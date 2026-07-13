@@ -81,6 +81,10 @@ model Guest {
   // Renseignés par l'admin après l'inscription, visibles au scan du QR le jour J.
   table       String?
   adminNote   String?
+  // Chanson proposée par l'invité pour la playlist du mariage (facultatif).
+  songTitle      String?
+  songArtist     String?
+  songYoutubeUrl String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   invitations Invitation[]

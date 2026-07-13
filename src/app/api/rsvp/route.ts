@@ -6,7 +6,7 @@ import { formatDateRange } from '@/lib/format'
 
 export async function POST(req: Request) {
   const body = await req.json()
-  const { firstName, lastName, email, phone, ceremonies, notes } = body
+  const { firstName, lastName, email, phone, ceremonies, notes, songTitle, songArtist, songYoutubeUrl } = body
 
   if (!firstName || !lastName || !email) {
     return NextResponse.json({ error: 'Prénom, nom et email sont requis' }, { status: 400 })
@@ -16,16 +16,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Sélectionnez au moins une cérémonie' }, { status: 400 })
   }
 
+  const songData = {
+    songTitle: songTitle || null,
+    songArtist: songArtist || null,
+    songYoutubeUrl: songYoutubeUrl || null,
+  }
+
   // Find or create guest by email
   let guest = await prisma.guest.findFirst({ where: { email } })
   if (guest) {
     guest = await prisma.guest.update({
       where: { id: guest.id },
-      data: { firstName, lastName, phone: phone || null },
+      data: { firstName, lastName, phone: phone || null, ...songData },
     })
   } else {
     guest = await prisma.guest.create({
-      data: { firstName, lastName, email, phone: phone || null },
+      data: { firstName, lastName, email, phone: phone || null, ...songData },
     })
   }
 
