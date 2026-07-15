@@ -2,6 +2,9 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import GuestQRCode from '@/components/public/GuestQRCode'
+import Pagination from '@/components/admin/Pagination'
+
+const PAGE_SIZE = 10
 
 type Guest = { id: string; firstName: string; lastName: string; email?: string; phone?: string }
 type NamedRef = { id: string; name: string; description?: string }
@@ -51,6 +54,8 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
   const [ceremonyLabel, setCeremonyLabel] = useState<string>(ceremony)
   const [ceremonyEmoji, setCeremonyEmoji] = useState('💒')
   const [createdGuest, setCreatedGuest] = useState<{ id: string; firstName: string; lastName: string } | null>(null)
+  const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
   const [sortBy, setSortBy] = useState<'name' | 'menu' | 'respondedAt'>('respondedAt')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
 
@@ -179,7 +184,16 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
     }
   }
 
-  const sortedInvitations = [...invitations].sort((a, b) => {
+  const filteredInvitations = invitations.filter((inv) => {
+    const q = search.trim().toLowerCase()
+    if (!q) return true
+    return (
+      `${inv.guest.firstName} ${inv.guest.lastName}`.toLowerCase().includes(q) ||
+      `${inv.guest.lastName} ${inv.guest.firstName}`.toLowerCase().includes(q)
+    )
+  })
+
+  const sortedInvitations = [...filteredInvitations].sort((a, b) => {
     let cmp = 0
     if (sortBy === 'name') {
       cmp = `${a.guest.lastName} ${a.guest.firstName}`.localeCompare(`${b.guest.lastName} ${b.guest.firstName}`)
@@ -192,6 +206,10 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
     }
     return sortDir === 'asc' ? cmp : -cmp
   })
+
+  const pageCount = Math.ceil(sortedInvitations.length / PAGE_SIZE)
+  const safePage = Math.min(page, Math.max(1, pageCount))
+  const pageInvitations = sortedInvitations.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
 
   const SortHeader = ({ col, label }: { col: 'name' | 'menu' | 'respondedAt'; label: string }) => {
     const active = sortBy === col
@@ -391,12 +409,23 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
         </div>
       )}
 
+      {/* Search */}
+      <div className="mb-4">
+        <input
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+          placeholder="🔍 Rechercher un invité (nom ou prénom)"
+          className="w-full max-w-md border rounded-lg px-4 py-2 text-sm focus:outline-none"
+          style={{ borderColor: '#e8d5b7' }}
+        />
+      </div>
+
       {/* Table */}
       <div className="bg-white rounded-2xl shadow-sm border overflow-hidden" style={{ borderColor: '#f0e6d3' }}>
-        {invitations.length === 0 ? (
+        {sortedInvitations.length === 0 ? (
           <div className="p-12 text-center text-gray-400">
             <div className="text-4xl mb-3">📋</div>
-            <p>Aucune invitation trouvée</p>
+            <p>{search ? 'Aucun invité ne correspond à la recherche' : 'Aucune invitation trouvée'}</p>
           </div>
         ) : (
           <table className="w-full text-sm">
@@ -411,9 +440,9 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
               </tr>
             </thead>
             <tbody>
-              {sortedInvitations.map((inv, i) => {
+              {pageInvitations.map((inv, i) => {
                 return (
-                  <tr key={inv.id} style={{ borderBottom: i < sortedInvitations.length - 1 ? '1px solid #f0e6d3' : 'none' }}>
+                  <tr key={inv.id} style={{ borderBottom: i < pageInvitations.length - 1 ? '1px solid #f0e6d3' : 'none' }}>
                     <td className="px-4 py-3">
                       <div className="font-medium text-gray-800">
                         {inv.guest.lastName} {inv.guest.firstName}
@@ -445,6 +474,7 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
             </tbody>
           </table>
         )}
+        <Pagination page={safePage} pageCount={pageCount} onChange={setPage} />
       </div>
     </div>
   )

@@ -1,6 +1,9 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
+import Pagination from '@/components/admin/Pagination'
+
+const PAGE_SIZE = 10
 
 type Guest = {
   id: string
@@ -25,6 +28,8 @@ export default function GuestsPage() {
   const [editGuest, setEditGuest] = useState<Guest | null>(null)
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '', table: '', adminNote: '' })
   const [submitting, setSubmitting] = useState(false)
+  const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
 
   const load = useCallback(async () => {
     const res = await fetch('/api/admin/guests')
@@ -71,6 +76,19 @@ export default function GuestsPage() {
     await load()
   }
 
+  const filteredGuests = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    if (!q) return guests
+    return guests.filter((g) =>
+      `${g.firstName} ${g.lastName}`.toLowerCase().includes(q) ||
+      `${g.lastName} ${g.firstName}`.toLowerCase().includes(q)
+    )
+  }, [guests, search])
+
+  const pageCount = Math.ceil(filteredGuests.length / PAGE_SIZE)
+  const safePage = Math.min(page, Math.max(1, pageCount))
+  const pageGuests = filteredGuests.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+
   if (loading) return <div className="p-8 text-gray-500">Chargement...</div>
 
   return (
@@ -85,6 +103,16 @@ export default function GuestsPage() {
         <button onClick={openAdd} className="px-4 py-2 rounded-lg text-white text-sm" style={{ background: '#8b7355' }}>
           + Ajouter
         </button>
+      </div>
+
+      <div className="mb-4">
+        <input
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+          placeholder="🔍 Rechercher un invité (nom ou prénom)"
+          className="w-full max-w-md border rounded-lg px-4 py-2 text-sm focus:outline-none"
+          style={{ borderColor: '#e8d5b7' }}
+        />
       </div>
 
       {showForm && (
@@ -115,10 +143,10 @@ export default function GuestsPage() {
       )}
 
       <div className="bg-white rounded-2xl shadow-sm border overflow-hidden" style={{ borderColor: '#f0e6d3' }}>
-        {guests.length === 0 ? (
+        {filteredGuests.length === 0 ? (
           <div className="p-12 text-center text-gray-400">
             <div className="text-4xl mb-3">👥</div>
-            <p>Aucun invité pour l'instant</p>
+            <p>{search ? 'Aucun invité ne correspond à la recherche' : 'Aucun invité pour l\'instant'}</p>
           </div>
         ) : (
           <table className="w-full text-sm">
@@ -132,8 +160,8 @@ export default function GuestsPage() {
               </tr>
             </thead>
             <tbody>
-              {guests.map((g, i) => (
-                <tr key={g.id} style={{ borderBottom: i < guests.length - 1 ? '1px solid #f0e6d3' : 'none' }}>
+              {pageGuests.map((g, i) => (
+                <tr key={g.id} style={{ borderBottom: i < pageGuests.length - 1 ? '1px solid #f0e6d3' : 'none' }}>
                   <td className="px-4 py-3 font-medium text-gray-800">{g.lastName} {g.firstName}</td>
                   <td className="px-4 py-3 text-gray-500">
                     {g.email && <div>{g.email}</div>}
@@ -171,6 +199,7 @@ export default function GuestsPage() {
             </tbody>
           </table>
         )}
+        <Pagination page={safePage} pageCount={pageCount} onChange={setPage} />
       </div>
     </div>
   )
