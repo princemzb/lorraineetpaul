@@ -55,13 +55,14 @@ export default function MusiquePage() {
             <p>Aucune chanson proposée pour l&apos;instant</p>
           </div>
         ) : (
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[560px]">
             <thead>
               <tr style={{ background: '#fdf3e3', borderBottom: '2px solid #f0e6d3' }}>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Invité</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Titre</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Artiste</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Lien</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Invité</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Titre</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Artiste</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Lien</th>
               </tr>
             </thead>
             <tbody>
@@ -90,6 +91,7 @@ export default function MusiquePage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
     </div>

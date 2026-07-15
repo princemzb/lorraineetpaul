@@ -239,14 +239,14 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
 
   return (
     <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-medium" style={{ color: '#8b7355', fontFamily: 'Georgia, serif' }}>
             {ceremonyEmoji} {ceremonyLabel}
           </h1>
           <p className="text-gray-500 text-sm mt-1">{invitations.length} invitation{invitations.length > 1 ? 's' : ''}</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <a
             href={`/api/admin/export/${ceremony.toLowerCase()}?sort=${sortBy}&dir=${sortDir}`}
             className="px-4 py-2 rounded-lg border text-sm font-medium transition-all"
@@ -315,7 +315,7 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
             </button>
           </div>
           {addMode === 'new' ? (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <input value={newFirstName} onChange={e => setNewFirstName(e.target.value)} placeholder="Prénom *" className="border rounded-lg px-3 py-2 text-sm focus:outline-none" style={{ borderColor: '#e8d5b7' }} />
               <input value={newLastName} onChange={e => setNewLastName(e.target.value)} placeholder="Nom *" className="border rounded-lg px-3 py-2 text-sm focus:outline-none" style={{ borderColor: '#e8d5b7' }} />
               <input value={newEmail} onChange={e => setNewEmail(e.target.value)} placeholder="Email" type="email" className="border rounded-lg px-3 py-2 text-sm focus:outline-none" style={{ borderColor: '#e8d5b7' }} />
@@ -428,7 +428,8 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
             <p>{search ? 'Aucun invité ne correspond à la recherche' : 'Aucune invitation trouvée'}</p>
           </div>
         ) : (
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[720px]">
             <thead>
               <tr style={{ background: '#fdf3e3', borderBottom: '2px solid #f0e6d3' }}>
                 <SortHeader col="name" label="Invité" />
@@ -473,6 +474,7 @@ export default function InvitationsPage({ ceremony }: { ceremony: 'CIVIL' | 'REL
               })}
             </tbody>
           </table>
+          </div>
         )}
         <Pagination page={safePage} pageCount={pageCount} onChange={setPage} />
       </div>

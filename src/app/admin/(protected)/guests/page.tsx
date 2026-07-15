@@ -120,13 +120,13 @@ export default function GuestsPage() {
           <h3 className="font-medium mb-4" style={{ color: '#8b7355' }}>
             {editGuest ? 'Modifier l\'invité' : 'Nouvel invité'}
           </h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <input value={form.firstName} onChange={e => setForm(f => ({ ...f, firstName: e.target.value }))} placeholder="Prénom *" className="border rounded-lg px-3 py-2 text-sm focus:outline-none" style={{ borderColor: '#e8d5b7' }} />
             <input value={form.lastName} onChange={e => setForm(f => ({ ...f, lastName: e.target.value }))} placeholder="Nom *" className="border rounded-lg px-3 py-2 text-sm focus:outline-none" style={{ borderColor: '#e8d5b7' }} />
             <input value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="Email" type="email" className="border rounded-lg px-3 py-2 text-sm focus:outline-none" style={{ borderColor: '#e8d5b7' }} />
             <input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="Téléphone" className="border rounded-lg px-3 py-2 text-sm focus:outline-none" style={{ borderColor: '#e8d5b7' }} />
             <input value={form.table} onChange={e => setForm(f => ({ ...f, table: e.target.value }))} placeholder="Table (ex: Table 5, Table des mariés...)" className="border rounded-lg px-3 py-2 text-sm focus:outline-none" style={{ borderColor: '#e8d5b7' }} />
-            <input value={form.adminNote} onChange={e => setForm(f => ({ ...f, adminNote: e.target.value }))} placeholder="Note interne (visible au check-in)" className="border rounded-lg px-3 py-2 text-sm focus:outline-none col-span-2" style={{ borderColor: '#e8d5b7' }} />
+            <input value={form.adminNote} onChange={e => setForm(f => ({ ...f, adminNote: e.target.value }))} placeholder="Note interne (visible au check-in)" className="border rounded-lg px-3 py-2 text-sm focus:outline-none sm:col-span-2" style={{ borderColor: '#e8d5b7' }} />
           </div>
           <p className="text-xs text-gray-400 mt-2">
             La table et la note interne apparaîtront lors du scan du QR code de l&apos;invité le jour J.
@@ -149,14 +149,15 @@ export default function GuestsPage() {
             <p>{search ? 'Aucun invité ne correspond à la recherche' : 'Aucun invité pour l\'instant'}</p>
           </div>
         ) : (
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[640px]">
             <thead>
               <tr style={{ background: '#fdf3e3', borderBottom: '2px solid #f0e6d3' }}>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Nom</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Contact</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Cérémonies</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Table</th>
-                <th className="text-right px-4 py-3 font-medium text-gray-600">Actions</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Nom</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Contact</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Cérémonies</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Table</th>
+                <th className="text-right px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -198,6 +199,7 @@ export default function GuestsPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
         <Pagination page={safePage} pageCount={pageCount} onChange={setPage} />
       </div>
