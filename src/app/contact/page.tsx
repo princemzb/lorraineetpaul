@@ -52,6 +52,118 @@ const pageStyles = `
     font-size: 1.08rem;
   }
 
+  .contact-page .promo-banner {
+    position: relative;
+    overflow: hidden;
+    margin: 0 0 45px;
+    padding: 38px 40px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #6f472b 0%, #c9a227 100%);
+    box-shadow: 0 20px 50px rgba(111, 71, 43, 0.35);
+    color: #ffffff;
+    text-align: center;
+  }
+
+  .contact-page .promo-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 15% 20%, rgba(255,255,255,0.18), transparent 45%),
+                radial-gradient(circle at 85% 80%, rgba(255,255,255,0.14), transparent 45%);
+    pointer-events: none;
+  }
+
+  .contact-page .promo-badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px;
+    margin-bottom: 16px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+  }
+
+  .contact-page .promo-banner h2 {
+    position: relative;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    margin: 0 0 12px;
+    line-height: 1.2;
+  }
+
+  .contact-page .promo-banner h2 strong {
+    color: #fff6dd;
+  }
+
+  .contact-page .promo-banner > p {
+    position: relative;
+    max-width: 680px;
+    margin: 0 auto 26px;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 1.05rem;
+  }
+
+  .contact-page .promo-steps {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    max-width: 900px;
+    margin: 0 auto 22px;
+    text-align: left;
+  }
+
+  .contact-page .promo-steps li {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+
+  .contact-page .promo-steps .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    color: #6f472b;
+    font-weight: 800;
+    font-size: 0.9rem;
+  }
+
+  .contact-page .promo-steps strong {
+    font-size: 0.98rem;
+  }
+
+  .contact-page .promo-steps span {
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.88);
+  }
+
+  .contact-page .promo-note {
+    position: relative;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0;
+  }
+
+  @media (max-width: 700px) {
+    .contact-page .promo-steps {
+      grid-template-columns: 1fr;
+    }
+  }
+
   .contact-page .contact-layout {
     display: grid;
     grid-template-columns: 1fr 1.2fr;
@@ -352,6 +464,40 @@ export default function ContactPage() {
               Vous organisez un mariage ou un événement et souhaitez une plateforme personnalisée
               pour gérer les invités, les confirmations, les tables et les informations importantes ?
               Contactez-nous pour discuter de votre projet.
+            </p>
+          </section>
+
+          <section className="promo-banner">
+            <span className="promo-badge">🎁 Offre Parrainage</span>
+            <h2>
+              Recommandez nos services et <strong>gagnez 50€</strong>
+            </h2>
+            <p>
+              Vous êtes satisfait(e) de votre expérience avec Prémices et Associés Services ?
+              Parlez-en autour de vous ! Pour chaque personne que vous nous recommandez et qui
+              commande l&apos;une de nos prestations, nous vous offrons <strong>50€</strong> pour
+              vous remercier. Sans limite du nombre de recommandations.
+            </p>
+            <ul className="promo-steps">
+              <li>
+                <span className="step-num">1</span>
+                <strong>Vous partagez notre contact</strong>
+                <span>Parlez de nous à vos proches qui organisent un mariage ou un événement.</span>
+              </li>
+              <li>
+                <span className="step-num">2</span>
+                <strong>Ils passent commande</strong>
+                <span>Ils nous précisent votre nom lors de leur prise de contact avec nous.</span>
+              </li>
+              <li>
+                <span className="step-num">3</span>
+                <strong>Vous êtes récompensé(e)</strong>
+                <span>Dès la validation de leur projet, vous recevez vos 50€.</span>
+              </li>
+            </ul>
+            <p className="promo-note">
+              Offre valable pour toute recommandation ayant abouti à une commande. Contactez-nous par
+              WhatsApp pour plus de détails.
             </p>
           </section>
 

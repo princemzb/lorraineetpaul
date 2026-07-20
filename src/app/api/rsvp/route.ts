@@ -84,7 +84,6 @@ export async function POST(req: Request) {
 
   // Send confirmation email
   try {
-    const appUrl = process.env.APP_URL || 'http://localhost:3000'
     const ceremonyConfigs = await getCeremonyConfigs()
     const configByCeremony = new Map(ceremonyConfigs.map((c) => [c.ceremony, c]))
     await sendRsvpConfirmationEmail({
@@ -99,7 +98,6 @@ export async function POST(req: Request) {
             : undefined,
       })),
       notes,
-      appUrl,
     })
     await prisma.invitation.updateMany({
       where: { id: { in: createdInvitations.map((i) => i.id) } },
@@ -118,14 +116,12 @@ async function sendRsvpConfirmationEmail({
   ceremonies,
   dateRangeLabel,
   notes,
-  appUrl,
 }: {
   to: string
   guestName: string
   ceremonies: Array<{ label: string; menuName?: string }>
   dateRangeLabel: string
   notes?: string
-  appUrl: string
 }) {
   const nodemailer = await import('nodemailer')
   const transporter = nodemailer.default.createTransport({
@@ -172,8 +168,7 @@ table{width:100%}
       <p>Nous avons bien reçu votre confirmation de participation. Nous sommes ravis de vous compter parmi nous !</p>
       <table>${ceremonyRows}</table>
       ${notes ? `<p style="margin-top:20px;background:#fdf3e3;padding:12px 16px;border-radius:6px;font-size:14px;color:#8b7355"><strong>Vos notes :</strong> ${notes}</p>` : ''}
-      <p style="margin-top:24px">Si vous souhaitez modifier votre réponse, n'hésitez pas à <a href="${appUrl}/rsvp" style="color:#8b7355">remplir à nouveau le formulaire</a>.</p>
-      <p>Avec toute notre affection,<br><strong>Lorraine &amp; Paul</strong></p>
+      <p style="margin-top:24px">Avec toute notre affection,<br><strong>Lorraine &amp; Paul</strong></p>
     </div>
     <div class="ft"><p>Mariage Lorraine &amp; Paul — ${dateRangeLabel}</p></div>
   </div>
